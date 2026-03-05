@@ -1,6 +1,6 @@
 /* 날짜: 2026-03-06
-코드이름: api.js (파싱 로직 최종 강화)
-수정할 부분 내용: 구글 Veo 응답 구조(generatedSamples, videos 복수형 대응) 파싱 로직 세분화
+코드이름: api.js (데이터 추출 및 체킹 강화 버전)
+수정할 부분 내용: 구글 응답 객체(GenerateVideoResponse)의 대소문자 구분 및 중첩 구조 파싱 로직 최종 보강
 */
 
 export async function generateAiPrompt(keywords, type) {
@@ -38,40 +38,52 @@ async function pollRealVideoStatus(operationName) {
         const interval = setInterval(async () => {
             attempts++;
             try {
+                // 💡 [체킹] 백엔드에 현재 상태를 물어봅니다.
                 const res = await fetch(`/api/veo?operationName=${encodeURIComponent(operationName)}`);
                 const statusData = await res.json();
 
                 if (statusData.done) {
                     clearInterval(interval);
+                    
                     if (statusData.error) {
                         reject(new Error(`렌더링 실패: ${statusData.error.message}`));
                     } else {
-                        // 💡 [핵심 수정] 구글 응답의 모든 가능성을 체크합니다.
-                        const responseObj = statusData.response;
-                        const genRes = responseObj?.generateVideoResponse;
+                        console.log("✅ [성공] 구글 서버가 작업을 마쳤습니다. 데이터를 분석합니다.");
                         
-                        // 1순위: generatedSamples[0].video (최신 규격)
-                        // 2순위: videos[0] (복수형 응답 대응)
-                        const videoObj = genRes?.generatedSamples?.[0]?.video || genRes?.videos?.[0] || responseObj?.video;
+                        // 💡 [핵심 보강] 구글의 복잡하고 유동적인 응답 구조를 샅샅이 뒤집니다.
+                        const resp = statusData.response;
+                        // g가 대문자인 경우와 소문자인 경우 모두 대응
+                        const genRes = resp?.GenerateVideoResponse || resp?.generateVideoResponse;
+                        
+                        // 영상 객체 후보군 (GeneratedSamples 또는 videos)
+                        const samples = genRes?.generatedSamples || genRes?.videos || resp?.videos;
+                        const videoObj = (samples && samples[0]?.video) ? samples[0].video : (samples ? samples[0] : null);
                         
                         let realVideoUrl = null;
+
                         if (videoObj?.bytesBase64Encoded) {
+                            console.log("📦 Base64 형태의 영상을 발견했습니다.");
                             realVideoUrl = `data:video/mp4;base64,${videoObj.bytesBase64Encoded}`;
                         } else if (videoObj?.uri) {
-                            realVideoUrl = videoObj.uri.startsWith('gs://') 
-                                ? videoObj.uri.replace("gs://", "https://storage.googleapis.com/") 
-                                : videoObj.uri;
+                            console.log("🔗 URL 형태의 영상을 발견했습니다:", videoObj.uri);
+                            realVideoUrl = videoObj.uri.replace("gs://", "https://storage.googleapis.com/");
                         }
 
-                        if (!realVideoUrl) {
-                            console.log("파싱 시도 데이터:", responseObj); // 디버깅용
-                            reject(new Error("영상은 완성되었으나 데이터를 추출할 수 없습니다."));
-                        } else {
+                        if (realVideoUrl) {
+                            console.log("🚀 영상 주소 추출 완료! 화면에 표시합니다.");
                             resolve({ videoUrl: realVideoUrl });
+                        } else {
+                            console.error("❌ [오류] 데이터 구조 분석 실패:", resp);
+                            reject(new Error("영상 데이터 위치를 찾을 수 없습니다."));
                         }
                     }
+                } else {
+                    // 💡 [체킹] 진행 상황 로그 출력
+                    console.log(`⏳ 영상 제작 중... (${attempts}회차 확인 완료)`);
                 }
-            } catch (err) { console.warn("조회 중...", err); }
+            } catch (err) {
+                console.warn("조회 대기 중...", err);
+            }
         }, 5000);
     });
 }
