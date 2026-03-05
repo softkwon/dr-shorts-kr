@@ -51,9 +51,9 @@
                     <span class="mr-2">🚀</span> 원클릭 송출 프로세스
                 </h5>
                 <ul class="text-[11px] text-orange-700 space-y-2 leading-relaxed">
-                    <li>1. 플랫폼 버튼 클릭 시 **영상이 기기에 자동 저장**됩니다.</li>
-                    <li>2. 동시에 **게시글 본문이 복사**되며 해당 앱/웹으로 이동합니다.</li>
-                    <li>3. 이동한 화면에서 방금 저장된 영상을 선택하고 본문을 **'붙여넣기'** 하세요.</li>
+                    <li>1. 플랫폼 버튼 클릭 시 영상이 기기에 자동 저장됩니다.</li>
+                    <li>2. 동시에 게시글 본문이 복사되며 해당 앱/웹으로 이동합니다.</li>
+                    <li>3. 이동한 화면에서 방금 저장된 영상을 선택하고 본문을 '붙여넣기' 하세요.</li>
                 </ul>
             </div>
 
@@ -81,8 +81,10 @@
             const data = myContents.find(c => c.id == contentId);
 
             if (data) {
-                currentVideoUrl = data.videoUrl || "";
+                // 💡 [핵심] LocalStorage에 주소가 없으면 임시 보관소에서 가져옵니다.
+                currentVideoUrl = data.videoUrl || sessionStorage.getItem('tempVideoData') || "";
                 currentFullText = data.fullText || "내용이 없습니다.";
+                
                 document.getElementById('content-title').innerText = data.keywords || '진료 안내 콘텐츠';
                 document.getElementById('content-type').innerText = data.type === 'video' ? 'YOUTUBE SHORTS' : 'SNS POST';
                 document.getElementById('content-icon').innerText = data.type === 'video' ? '🎬' : '📝';

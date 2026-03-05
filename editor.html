@@ -223,31 +223,31 @@
                 const contentId = Date.now();
                 const myContents = JSON.parse(localStorage.getItem('myContents') || '[]');
                 
-                // 💡 [핵심 수정] 무거운 videoUrl(Base64)은 제외하고 가벼운 텍스트 정보만 저장합니다.
+                // 1. 가벼운 텍스트 정보만 LocalStorage에 저장 (영구 보관용)
                 const newContent = {
                     id: contentId,
                     keywords: document.getElementById('content-title')?.innerText || '병원 홍보 영상',
                     type: 'video',
                     date: new Date().toLocaleDateString(),
-                    // videoUrl: currentVideoUrl // 🚨 이 줄을 주석 처리하거나 지워서 용량 초과를 막습니다.
                     fullText: document.querySelector('.prose')?.innerText || "" 
                 };
-
                 myContents.push(newContent);
                 localStorage.setItem('myContents', JSON.stringify(myContents));
                 localStorage.setItem('currentContentId', contentId);
+
+                // 2. 💡 [핵심] 무거운 영상 데이터는 SessionStorage에 임시 저장 (발행용)
+                // currentVideoUrl 변수에 담긴 Base64 데이터를 넣습니다.
+                if (typeof currentVideoUrl !== 'undefined' && currentVideoUrl) {
+                    sessionStorage.setItem('tempVideoData', currentVideoUrl);
+                }
                 
-                // 💡 영상 데이터는 메모리(변수)에 담긴 상태로 발행 페이지에 파라미터로 넘기거나, 
-                // 그냥 바로 발행 페이지로 이동합니다.
                 location.href = 'publish.html';
                 
             } catch (e) {
                 console.error("저장 실패:", e);
-                // 만약 그래도 에러가 난다면 저장소를 한 번 비워줍니다.
                 if (e.name === 'QuotaExceededError') {
-                    alert("저장 공간이 가득 찼습니다. 이전 기록을 삭제하고 다시 시도합니다.");
                     localStorage.removeItem('myContents');
-                    window.saveAndGoPublish();
+                    alert("저장소 정리 후 다시 시도합니다.");
                 }
             }
         };
