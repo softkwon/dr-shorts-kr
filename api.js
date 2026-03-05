@@ -1,13 +1,3 @@
-/* 날짜: 2026-03-05
-코드이름: api.js
-수정할 부분 내용: 통신 헤더/URL 에러(ISO-8859-1) 방지를 위한 한글 문자열 완벽 제거
-*/
-
-// ==========================================
-// 1. 텍스트 생성 (Gemini API) 세팅
-// ==========================================
-const GEMINI_API_KEY = "AIzaSyBM3tt9fWaXODQGnhrA1FGNTCbGHgkNTjs"; 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${GEMINI_API_KEY}`;
 
 export async function generateAiPrompt(keywords, type) {
     const promptText = `의료법을 준수하여 [${keywords}] 기반 ${type} 대본을 작성하세요.`;
