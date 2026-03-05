@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>의료법 스캐닝 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 스캐닝 레이저 애니메이션 */
+        .scan-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-bar {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to bottom, transparent, #f97316);
+            position: absolute;
+            top: -10px;
+            left: 0;
+            box-shadow: 0 0 15px #f97316;
+            animation: scan-move 2.5s linear infinite;
+        }
+        @keyframes scan-move {
+            0% { top: -10px; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative bg-gray-50">
+
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="responsive-container max-w-lg">
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12 text-center">
+                
+                <div id="visual-box" class="scan-container relative w-48 h-48 bg-orange-50 rounded-2xl mx-auto mb-8 flex items-center justify-center border-2 border-orange-100">
+                    <div id="laser-bar" class="scan-bar"></div>
+                    <div id="status-icon" class="text-6xl text-orange-500">🔍</div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 id="main-status" class="text-2xl font-bold text-gray-800 transition-all duration-300">의료법 자동 스캐닝 중...</h2>
+                    <p id="sub-status" class="text-gray-500 text-sm break-keep leading-relaxed min-h-[40px]">
+                        현행 의료법을 기준으로 금지어, 과장 표현,<br>사용 불가한 약칭 등을 정밀하게 분석하고 있습니다.
+                    </p>
+                </div>
+
+                <div class="w-full bg-gray-100 h-2 rounded-full mt-10 overflow-hidden">
+                    <div id="progress-fill" class="theme-bg h-full w-0 transition-all duration-300 ease-out"></div>
+                </div>
+                <p id="progress-percent" class="text-[10px] text-gray-400 mt-2 font-bold tracking-widest">ANALYZING 0%</p>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+        import { generateAiPrompt } from './api.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html', checkLoginState);
+            loadComponent('footer-placeholder', 'footer.html');
+            startScanProcess();
+        });
+
+        async function startScanProcess() {
+            const mainStatus = document.getElementById('main-status');
+            const subStatus = document.getElementById('sub-status');
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercent = document.getElementById('progress-percent');
+            const statusIcon = document.getElementById('status-icon');
+            const laserBar = document.getElementById('laser-bar');
+
+            // 1. 임시 저장된 데이터 확인
+            const temp = JSON.parse(localStorage.getItem('tempContent'));
+            if (!temp) {
+                alert("분석할 키워드가 없습니다. 다시 시도해주세요.");
+                location.href = 'create.html';
+                return;
+            }
+
+            // 2. [비동기] 프로그레스 바 작동과 동시에 실제 AI 검수 요청
+            const aiPromise = generateAiPrompt(temp.keywords, temp.type);
+
+            let progress = 0;
+            const interval = setInterval(async () => {
+                progress += Math.floor(Math.random() * 5) + 3;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // 💡 애니메이션 종료 후 AI 응답 대기
+                    try {
+                        const aiResult = await aiPromise;
+                        
+                        if (aiResult.status === "success") {
+                            // 데이터 저장
+                            temp.aiScript = aiResult.fullText;
+                            localStorage.setItem('tempContent', JSON.stringify(temp));
+                            
+                            // 정상 완료 화면 표시 (강제 오류 삭제됨)
+                            showScanSuccess();
+                        } else {
+                            throw new Error("AI 분석 실패");
+                        }
+                    } catch (err) {
+                        mainStatus.innerText = "연결 오류가 발생했습니다";
+                        subStatus.innerText = "잠시 후 다시 시도해주세요.";
+                    }
+                }
+                progressFill.style.width = progress + '%';
+                progressPercent.innerText = `ANALYZING ${progress}%`;
+            }, 100);
+
+            // ✅ 정상 완료 시 UI 처리 함수
+            function showScanSuccess() {
+                laserBar.style.display = 'none';
+                statusIcon.innerText = '✅';
+                mainStatus.innerText = '스캐닝 및 검증 완료';
+                mainStatus.classList.add('text-green-600');
+                subStatus.innerHTML = '의료법 가이드라인을 준수한 대본 생성이 완료되었습니다.<br>잠시 후 편집기로 이동합니다.';
+
+                setTimeout(() => {
+                    location.href = 'editor.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

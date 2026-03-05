@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. SHORTS KR - 병의원 숏폼 SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex flex-col min-h-screen relative">
+
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow flex items-center pt-8 pb-16 md:py-20">
+        <div class="responsive-container">
+            <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                <div class="w-full md:w-1/2 text-center md:text-left space-y-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-2xl mb-2 md:mb-0">
+                        <span class="text-3xl">🛡️</span>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
+                        의료법 위반 리스크 없는<br>
+                        <span class="theme-text">AI 숏폼 자동 생성</span>
+                    </h2>
+                    <p class="text-base md:text-lg text-gray-500 break-keep leading-relaxed">
+                        기존 병·의원 마케팅의 고질적인 한계인 '의료법 위반 리스크'와 '낮은 예약 전환율'을 동시에 해결하는 SaaS 솔루션입니다.
+                    </p>
+                    <div>
+                        <button onclick="location.href='login.html'" class="w-full md:w-auto theme-bg text-white px-10 py-4 rounded-xl font-bold text-lg md:text-xl shadow-lg theme-hover transition hover:-translate-y-1 active:scale-95">
+                            서비스 시작하기
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-left">
+                        <h3 class="font-bold text-gray-800 mb-3 flex items-center text-lg"><span class="mr-2">🎯</span>이런 원장님께 추천합니다</h3>
+                        <ul class="space-y-2 text-sm md:text-base text-gray-600">
+                            <li class="flex items-start"><span class="theme-text mr-2 font-bold">✓</span> 비급여 마케팅 효율이 고민이신 개원 1~5년 차 병·의원</li>
+                            <li class="flex items-start"><span class="theme-text mr-2 font-bold">✓</span> 영상 제작 대행사의 높은 비용이 부담스러우신 분</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2">
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="bg-white p-6 md:p-8 border border-gray-100 rounded-2xl text-center shadow-md hover:shadow-xl transition hover:-translate-y-1">
+                            <div class="text-4xl md:text-5xl mb-4">🤖</div>
+                            <div class="font-bold text-gray-800 md:text-lg">병원 전문 AI 숏폼</div>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 border border-gray-100 rounded-2xl text-center shadow-md hover:shadow-xl transition hover:-translate-y-1">
+                            <div class="text-4xl md:text-5xl mb-4">🔍</div>
+                            <div class="font-bold text-gray-800 md:text-lg">의료법 스캐닝</div>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 border border-gray-100 rounded-2xl text-center shadow-md hover:shadow-xl transition hover:-translate-y-1">
+                            <div class="text-4xl md:text-5xl mb-4">🚀</div>
+                            <div class="font-bold text-gray-800 md:text-lg">원클릭 송출</div>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 border border-gray-100 rounded-2xl text-center shadow-md hover:shadow-xl transition hover:-translate-y-1">
+                            <div class="text-4xl md:text-5xl mb-4">📊</div>
+                            <div class="font-bold text-gray-800 md:text-lg">성과 분석 DB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // 페이지가 열릴 때 footer-placeholder 영역에 footer.html을 채워 넣음
+        window.onload = function() {
+            loadComponent('footer-placeholder', 'footer.html');
+        };
+    </script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
+            loadComponent('header-placeholder', 'header.html', () => {
+                checkLoginState(); 
+            });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+
+</body>
+</html>

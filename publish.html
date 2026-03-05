@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원클릭 송출 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="w-full max-w-3xl bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-2 italic tracking-tighter">One-Click Publishing</h2>
+            <p class="text-center text-gray-500 text-sm mb-10">선택하신 플랫폼의 게시물 작성 화면으로 안전하게 연결합니다. [cite: 48, 52]</p>
+
+            <div class="mb-10 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center">
+                <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-2xl mr-4" id="content-icon">🎬</div>
+                <div class="flex-grow overflow-hidden">
+                    <p class="text-[10px] font-bold text-orange-500" id="content-type">YOUTUBE SHORTS</p>
+                    <h4 class="font-bold text-gray-800 truncate" id="content-title">생성된 콘텐츠 제목</h4>
+                </div>
+                <button onclick="copyAll()" class="shrink-0 ml-4 text-xs font-bold text-blue-500 hover:underline">본문 전체 복사</button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <button onclick="linkToPlatform('youtube')" class="flex flex-col items-center p-5 border-2 border-gray-50 rounded-2xl hover:border-red-500 hover:bg-red-50 transition">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" class="w-10 h-10 object-contain mb-3" alt="YouTube">
+                    <span class="text-xs font-bold text-gray-700">쇼츠 업로드</span>
+                </button>
+                <button onclick="linkToPlatform('instagram')" class="flex flex-col items-center p-5 border-2 border-gray-50 rounded-2xl hover:border-pink-500 hover:bg-pink-50 transition">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-10 h-10 object-contain mb-3" alt="Instagram">
+                    <span class="text-xs font-bold text-gray-700">릴스/게시물</span>
+                </button>
+                <button onclick="linkToPlatform('naver')" class="flex flex-col items-center p-5 border-2 border-gray-50 rounded-2xl hover:border-green-500 hover:bg-green-50 transition">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Naver_Logotype.svg" class="w-10 h-10 object-contain mb-3" alt="Naver">
+                    <span class="text-xs font-bold text-gray-700">블로그/클립</span>
+                </button>
+                <button onclick="linkToPlatform('facebook')" class="flex flex-col items-center p-5 border-2 border-gray-50 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="w-10 h-10 object-contain mb-3" alt="Facebook">
+                    <span class="text-xs font-bold text-gray-700">피드 게시</span>
+                </button>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100 mb-8">
+                <h5 class="text-xs font-bold text-blue-800 mb-2 flex items-center">
+                    <span class="mr-2">💡</span> 원클릭 송출 가이드 
+                </h5>
+                <ul class="text-[11px] text-blue-700 space-y-2 leading-relaxed">
+                    <li>1. 버튼 클릭 시 해당 플랫폼의 게시물 작성 화면으로 즉시 이동합니다.</li>
+                    <li>2. 동시에 게시글 제목, 본문, 해시태그가 자동으로 클립보드에 복사됩니다.</li>
+                    <li>3. 이동한 화면에서 '붙여넣기'만 누르면 모든 내용이 채워집니다. </li>
+                </ul>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="location.href='library.html'" class="flex-grow bg-gray-100 text-gray-600 py-4 rounded-xl font-bold">서재로 이동</button>
+                <button onclick="location.href='dashboard.html'" class="flex-grow bg-gray-800 text-white py-4 rounded-xl font-bold">대시보드</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="app.js"></script>
+    <script>
+        // 현재 송출할 콘텐츠 데이터 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            const contentId = localStorage.getItem('currentContentId');
+            const myContents = JSON.parse(localStorage.getItem('myContents') || '[]');
+            const data = myContents.find(c => c.id == contentId);
+
+            if (data) {
+                document.getElementById('content-title').innerText = data.keywords || '진료 안내 콘텐츠';
+                document.getElementById('content-type').innerText = data.type === 'video' ? 'YOUTUBE SHORTS' : 'SNS POST';
+                document.getElementById('content-icon').innerText = data.type === 'video' ? '🎬' : '📝';
+            }
+        });
+
+        function copyAll() {
+            // 실제 데이터 기반 복사 (시뮬레이션)
+            const mockText = "[서울바른치과] 임플란트 통증 걱정 마세요!\n\n디지털 저통증 마취 시스템으로 세심하게 진료합니다.\n\n#임플란트 #서울바른치과 #치과추천";
+            navigator.clipboard.writeText(mockText);
+            alert("전체 본문이 복사되었습니다. 플랫폼에서 붙여넣기 하세요!");
+        }
+
+        function linkToPlatform(platform) {
+            copyAll(); // 이동 전 자동 복사 실행 [cite: 53]
+            
+            let url = "";
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            switch(platform) {
+                case 'youtube':
+                    // 유튜브 쇼츠 업로드 딥링크 [cite: 49, 52]
+                    url = isMobile ? "vnd.youtube://upload" : "https://www.youtube.com/upload";
+                    break;
+                case 'instagram':
+                    // 인스타그램 릴스/게시물 생성 화면 [cite: 49, 52]
+                    url = isMobile ? "instagram://camera" : "https://www.instagram.com/";
+                    break;
+                case 'naver':
+                    // 네이버 블로그 글쓰기 [cite: 49, 52]
+                    url = "https://blog.naver.com/PostWriteForm.naver";
+                    break;
+                case 'facebook':
+                    // 페이스북 피드 공유 [cite: 49, 52]
+                    url = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(window.location.origin);
+                    break;
+            }
+            
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 500);
+        }
+    </script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
+            loadComponent('header-placeholder', 'header.html', () => {
+                checkLoginState(); 
+            });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<header class="bg-white border-b sticky top-0 z-40 shadow-sm">
+    <div class="responsive-container h-16 flex justify-between items-center">
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-wider cursor-pointer hover:opacity-80 transition" onclick="location.href='index.html'">
+            <span class="theme-text">Dr. SHORTS</span><span class="text-gray-800">.KR</span>
+        </h1>
+        
+        <div class="flex items-center">
+            <div id="guest-area">
+                <button onclick="location.href='login.html'" class="text-sm md:text-base theme-text font-bold hover:text-orange-700 transition">
+                    로그인 / 회원가입
+                </button>
+            </div>
+
+            <div id="auth-area" class="hidden relative">
+                <button onclick="toggleUserMenu()" class="user-menu-btn flex items-center text-sm md:text-base font-medium text-gray-700 hover:text-orange-500 transition focus:outline-none">
+                    <span>안녕하세요, </span>
+                    <span class="user-name-text font-bold ml-1 text-gray-900">원장</span>님 
+                    <span class="ml-1 text-[10px]">▼</span>
+                </button>
+                
+                <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-40 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
+                    <a href="profile.html" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
+                        회원정보 수정
+                    </a>
+                    <div class="border-t border-gray-50 my-1"></div>
+                    <button onclick="handleLogout()" class="w-full text-left block px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition">
+                        로그아웃
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

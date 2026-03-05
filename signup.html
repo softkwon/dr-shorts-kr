@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원정보 입력 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        input[type="radio"].peer { display: none; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative bg-gray-50">
+
+    <header class="bg-white border-b sticky top-0 z-40 shadow-sm">
+        <div class="responsive-container h-16 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-extrabold tracking-wider cursor-pointer hover:opacity-80 transition" onclick="location.href='index.html'">
+                <span class="theme-text">Dr. SHORTS</span><span class="text-gray-800">.KR</span>
+            </h1>
+            <span class="text-sm font-bold text-gray-400">회원가입 2/2단계</span>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center py-10 px-4">
+        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-10">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">추가 회원정보 입력</h2>
+            <p class="text-gray-500 text-sm md:text-base mb-8">우리 병원에 딱 맞는 AI 맞춤 콘텐츠 생성을 위해 정보를 입력해 주세요.</p>
+
+            <form class="space-y-6" onsubmit="event.preventDefault(); localStorage.setItem('isLoggedIn', 'true'); location.href='dashboard.html';">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">병원명 <span class="theme-text">*</span></label>
+                        <input type="text" placeholder="예: 서울바른치과" class="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">담당자 (연동됨)</label>
+                        <input type="text" value="영석 원장" class="w-full border border-gray-200 bg-gray-100 p-3 rounded-xl text-gray-600 cursor-not-allowed" readonly>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">병원 주소 <span class="theme-text">*</span></label>
+                    <input type="text" placeholder="시/군/구 및 상세 주소 입력" class="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">진료과목 <span class="theme-text">*</span></label>
+                    <div class="relative">
+                        <select class="w-full border border-gray-300 p-3 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-orange-500 transition bg-white" required>
+                            <option value="" disabled selected>주요 진료과목을 선택해주세요</option>
+                            <option value="피부과">피부과</option>
+                            <option value="치과">치과</option>
+                            <option value="정형외과">정형외과 / 통증의학과</option>
+                            <option value="성형외과">성형외과</option>
+                            <option value="기타">기타</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-3">선호하는 콘텐츠 스타일 (클릭하여 선택) <span class="theme-text">*</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="content_style" value="trust" class="peer" required>
+                            <div class="border border-gray-200 rounded-xl p-4 text-center transition peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50">
+                                <div class="text-2xl mb-2">👨‍⚕️</div>
+                                <div class="font-bold text-sm mb-1">전문적인 신뢰형</div>
+                                <div class="text-xs text-gray-500">원장님 설명 중심, 정보 전달</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="content_style" value="friendly" class="peer">
+                            <div class="border border-gray-200 rounded-xl p-4 text-center transition peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50">
+                                <div class="text-2xl mb-2">🤝</div>
+                                <div class="font-bold text-sm mb-1">친근한 소통형</div>
+                                <div class="text-xs text-gray-500">진료실 브이로그, 환자 후기</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="content_style" value="trendy" class="peer">
+                            <div class="border border-gray-200 rounded-xl p-4 text-center transition peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50">
+                                <div class="text-2xl mb-2">✨</div>
+                                <div class="font-bold text-sm mb-1">트렌디한 B급 감성</div>
+                                <div class="text-xs text-gray-500">유행 밈 활용, 빠른 템포 편집</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100">
+                    <button type="submit" class="w-full theme-bg text-white py-4 rounded-xl font-bold text-lg shadow-md theme-hover transition active:scale-95">
+                        가입 완료 및 대시보드 이동
+                    </button>
+                </div>
+            </form>
+            
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = function() {
+            loadComponent('footer-placeholder', 'footer.html');
+        };
+    </script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
+            loadComponent('header-placeholder', 'header.html', () => {
+                checkLoginState(); 
+            });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>

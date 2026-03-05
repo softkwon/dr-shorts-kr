@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원정보 수정 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex flex-col min-h-screen relative bg-gray-50 font-sans">
+
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow pt-10 pb-20 px-4">
+        <div class="responsive-container max-w-2xl">
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+                <div class="theme-bg p-8 text-white">
+                    <div class="flex items-center space-x-5">
+                        <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center text-4xl backdrop-blur-md">🏥</div>
+                        <div>
+                            <h2 class="text-2xl font-bold" id="display-hospital-name">병원 정보를 입력해주세요</h2>
+                            <p class="text-orange-100 text-sm opacity-90" id="display-email">영석 님, 반갑습니다!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="p-8 md:p-10 space-y-6" onsubmit="saveProfile(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-700">병원명 </label>
+                            <input type="text" id="hospital-name" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm" placeholder="예: 서울바른치과" required>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-700">담당자 (원장님 성함) </label>
+                            <input type="text" id="manager-name" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm" placeholder="예: 권영석" required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700">병원 주소 </label>
+                        <input type="text" id="hospital-address" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm" placeholder="상세 주소를 입력해주세요">
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-bold text-gray-700">주요 진료과목 </label>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            <button type="button" onclick="selectSubject(this)" class="subject-tag px-4 py-2 rounded-full border border-gray-200 text-xs font-medium hover:bg-orange-50 hover:text-orange-600 transition">임플란트</button>
+                            <button type="button" onclick="selectSubject(this)" class="subject-tag px-4 py-2 rounded-full border border-gray-200 text-xs font-medium hover:bg-orange-50 hover:text-orange-600 transition">치아교정</button>
+                            <button type="button" onclick="selectSubject(this)" class="subject-tag px-4 py-2 rounded-full border border-gray-200 text-xs font-medium hover:bg-orange-50 hover:text-orange-600 transition">피부과/성형</button>
+                            <button type="button" onclick="selectSubject(this)" class="subject-tag px-4 py-2 rounded-full border border-gray-200 text-xs font-medium hover:bg-orange-50 hover:text-orange-600 transition">정형외과/도수</button>
+                        </div>
+                        <input type="hidden" id="selected-subject">
+                    </div>
+
+                    <hr class="border-gray-100">
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700">선호하는 콘텐츠 스타일 </label>
+                        <select id="content-style" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm bg-white">
+                            <option value="trust">신뢰도 중심 (나레이션형) </option>
+                            <option value="story">스토리텔링 중심 (인터뷰형) </option>
+                            <option value="vlog">친근함 중심 (브이로그형) </option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="location.href='dashboard.html'" class="flex-grow bg-gray-100 text-gray-500 py-4 rounded-xl font-bold hover:bg-gray-200 transition">취소</button>
+                        <button type="submit" class="flex-grow theme-bg text-white py-4 rounded-xl font-bold shadow-lg theme-hover transition active:scale-95">정보 저장하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="app.js"></script>
+    <script>
+        // 초기 데이터 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            const hospitalName = localStorage.getItem('hospitalName') || '서울바른치과';
+            const managerName = localStorage.getItem('managerName') || '영석';
+            const address = localStorage.getItem('hospitalAddress') || '';
+            
+            document.getElementById('hospital-name').value = hospitalName;
+            document.getElementById('manager-name').value = managerName;
+            document.getElementById('hospital-address').value = address;
+            document.getElementById('display-hospital-name').innerText = hospitalName;
+        });
+
+        // 진료과목 선택 핸들러 
+        function selectSubject(btn) {
+            document.querySelectorAll('.subject-tag').forEach(b => {
+                b.classList.remove('theme-bg', 'text-white', 'border-transparent');
+                b.classList.add('border-gray-200', 'text-gray-600');
+            });
+            btn.classList.remove('border-gray-200', 'text-gray-600');
+            btn.classList.add('theme-bg', 'text-white', 'border-transparent');
+            document.getElementById('selected-subject').value = btn.innerText;
+        }
+
+        // 프로필 저장 로직
+        function saveProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('hospital-name').value;
+            const manager = document.getElementById('manager-name').value;
+            const addr = document.getElementById('hospital-address').value;
+
+            localStorage.setItem('hospitalName', name);
+            localStorage.setItem('managerName', manager);
+            localStorage.setItem('hospitalAddress', addr);
+
+            alert('회원정보가 성공적으로 수정되었습니다.');
+            location.href = 'dashboard.html';
+        }
+    </script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
+            loadComponent('header-placeholder', 'header.html', () => {
+                checkLoginState(); 
+            });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>

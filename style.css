@@ -1,0 +1,24 @@
+/* 날짜: 2026-03-05
+코드이름: style.css
+수정할 부분(내용): 프로젝트 공통 CSS 분리. 브랜드 컬러(오렌지 테마) 및 전역 스타일 정의
+*/
+
+/* 기본 배경색 */
+body { 
+    background-color: #f9fafb; /* Tailwind gray-50 */
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+/* 브랜드 커스텀 테마 클래스 */
+.theme-text { color: #f97316; } /* Tailwind orange-500 */
+.theme-bg { background-color: #f97316; }
+.theme-hover:hover { background-color: #ea580c; } /* Tailwind orange-600 */
+.theme-border { border-color: #f97316; }
+
+/* PC/모바일 반응형 메인 컨테이너 */
+.responsive-container {
+    width: 100%;
+    max-width: 1200px; /* PC에서는 최대 1200px까지 확장 */
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}

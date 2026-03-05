@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>콘텐츠 생성 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        input[type="radio"].peer { display: none; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative bg-gray-50">
+
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow pt-6 pb-20 px-4">
+        <div class="responsive-container max-w-2xl">
+            <button onclick="location.href='dashboard.html'" class="mb-4 text-gray-500 text-sm flex items-center hover:text-orange-500 transition">
+                <span class="mr-1">←</span> 대시보드로 돌아가기
+            </button>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
+                <h2 id="create-title" class="text-2xl font-bold text-gray-800 mb-2">콘텐츠 생성</h2>
+                <p class="text-gray-500 text-sm mb-8">AI가 의료 광고 규정을 준수하며 맞춤형 콘텐츠를 설계합니다.</p>
+
+                <form id="creation-form" class="space-y-8">
+                    <section>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">1) 병원 정보 확인</label>
+                        <div class="p-4 bg-orange-50 rounded-xl border border-orange-100 text-sm text-gray-700">
+                            <p><strong>병원명:</strong> 서울바른치과</p>
+                            <p><strong>진료과목:</strong> 치과 (임플란트/교정 전문)</p>
+                        </div>
+                    </section>
+
+                    <section>
+                        <label class="block text-sm font-bold text-gray-700 mb-3">2) 생성 유형 선택 (AI 추천)</label>
+                        <div id="type-grid" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            </div>
+                    </section>
+
+                    <section id="video-time-section">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">3) 영상 시간 추천</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="v_time" value="15" class="hidden peer">
+                                <div class="border border-gray-200 rounded-xl py-3 text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50 text-sm font-bold transition">15초</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="v_time" value="30" class="hidden peer" checked>
+                                <div class="border border-gray-200 rounded-xl py-3 text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50 text-sm font-bold transition">30초</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="v_time" value="45" class="hidden peer">
+                                <div class="border border-gray-200 rounded-xl py-3 text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 hover:bg-gray-50 text-sm font-bold transition">45초</div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section>
+                        <label class="block text-sm font-bold text-gray-700 mb-3">4) 진료 키워드 선택</label>
+                        <div id="keyword-container" class="flex flex-wrap gap-2 mb-3">
+                            </div>
+                        <input type="text" id="custom-keyword" placeholder="기타 키워드를 직접 입력해 주세요" class="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm">
+                    </section>
+                    <section>
+                        <label class="block text-sm font-bold text-gray-700 mb-3">5) AI추천 - 예약성공 템플릿</label>
+                        <div class="grid grid-cols-1 gap-3">
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="template_select" value="t1" class="hidden peer" checked>
+                                <div class="relative border border-gray-200 rounded-2xl p-4 transition peer-checked:border-orange-500 peer-checked:bg-orange-50 hover:bg-gray-50">
+                                    <div class="flex justify-between items-start text-left">
+                                        <div>
+                                            <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-bold mb-2 inline-block">강남구 O치과 사례</span>
+                                            <h4 class="font-bold text-sm text-gray-800">"공포 없는 임플란트" 환자 인터뷰</h4>
+                                            <p class="text-xs text-gray-500 mt-1">예약 전환율 15% 상승 검증 완료</p>
+                                        </div>
+                                        <button type="button" onclick="window.open('https://www.youtube.com/shorts/v-p_kFkOYjY', '_blank')" class="text-[10px] text-blue-500 underline hover:text-blue-700 z-10">사례보기 ></button>
+                                    </div>
+                                    <div class="absolute top-3 right-3 hidden peer-checked:block"><div class="bg-orange-500 rounded-full p-1 text-white text-[10px]">✓</div></div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="template_select" value="t2" class="hidden peer">
+                                <div class="relative border border-gray-200 rounded-2xl p-4 transition peer-checked:border-orange-500 peer-checked:bg-orange-50 hover:bg-gray-50">
+                                    <div class="flex justify-between items-start text-left">
+                                        <div>
+                                            <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded font-bold mb-2 inline-block">서초구 O치과 사례</span>
+                                            <h4 class="font-bold text-sm text-gray-800">"원데이 보철" 브이로그 시나리오</h4>
+                                            <p class="text-xs text-gray-500 mt-1">문의 전화량 2배 증가 패턴 적용</p>
+                                        </div>
+                                        <button type="button" onclick="window.open('https://www.youtube.com/shorts/0eU4VwTqNRo', '_blank')" class="text-[10px] text-blue-500 underline hover:text-blue-700 z-10">사례보기 ></button>
+                                    </div>
+                                    <div class="absolute top-3 right-3 hidden peer-checked:block"><div class="bg-orange-500 rounded-full p-1 text-white text-[10px]">✓</div></div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="template_select" value="t3" class="hidden peer">
+                                <div class="relative border border-gray-200 rounded-2xl p-4 transition peer-checked:border-orange-500 peer-checked:bg-orange-50 hover:bg-gray-50">
+                                    <div class="flex justify-between items-start text-left">
+                                        <div>
+                                            <span class="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded font-bold mb-2 inline-block">신규 추천</span>
+                                            <h4 class="font-bold text-sm text-gray-800">"첫 교정 상담" Q&A 가이드</h4>
+                                            <p class="text-xs text-gray-500 mt-1">상담 예약 부도율(No-show) 감소 설계</p>
+                                        </div>
+                                        <button type="button" onclick="window.open('https://www.youtube.com/shorts/z63r5tgNAns', '_blank')" class="text-[10px] text-blue-500 underline hover:text-blue-700 z-10">사례보기 ></button>
+                                    </div>
+                                    <div class="absolute top-3 right-3 hidden peer-checked:block"><div class="bg-orange-500 rounded-full p-1 text-white text-[10px]">✓</div></div>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <button type="submit" class="w-full theme-bg text-white py-4 rounded-xl font-bold text-lg shadow-lg theme-hover transition active:scale-95">
+                        생성 & 의료법 체크 시작
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+        import { saveTempContent } from './storage.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html', checkLoginState);
+            loadComponent('footer-placeholder', 'footer.html');
+
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type') || 'video';
+            initCreatePage(type);
+
+            // 폼 전송 이벤트 연결
+            const form = document.getElementById('creation-form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleCreateSubmit();
+            });
+        });
+
+        function initCreatePage(type) {
+            const title = document.getElementById('create-title');
+            const typeGrid = document.getElementById('type-grid');
+            const videoSection = document.getElementById('video-time-section');
+            
+            if (type === 'video') {
+                title.innerText = "🎬 숏폼 영상 생성 설정";
+                videoSection.style.display = 'block';
+                // 💡 3가지 유형 복원: 나레이션, 인터뷰, 브이로그
+                typeGrid.innerHTML = 
+                    createTypeCard('v1', '🎙️', '나레이션형', '신뢰감 있는 정보전달', true) + 
+                    createTypeCard('v2', '👥', '인터뷰형', '생생한 환자/원장 후기') +
+                    createTypeCard('v3', '🏥', '브이로그형', '병원의 친근한 일상');
+                
+                // 💡 키워드 확장 (치과 전문성 강화)
+                setKeywords(['#임플란트', '#치아교정', '#틀니교정', '#무통치료', '#심미보철', '#원데이보철', '#사랑니발치', '#스케일링', '#치아미백', '#어린이치과']);
+            } else {
+                title.innerText = "📝 SNS 게시글 생성 설정";
+                videoSection.style.display = 'none';
+                // 💡 3가지 유형 복원: 카드뉴스, 스토리텔링, 비포애프터
+                typeGrid.innerHTML = 
+                    createTypeCard('s1', '📰', '카드뉴스형', '인스타/블로그 요약', true) +
+                    createTypeCard('s2', '📖', '스토리텔링형', '감동적인 치료 사례') +
+                    createTypeCard('s3', '✨', '비포애프터형', '시술 효과 극대화');
+                
+                // 💡 키워드 확장 (마케팅 키워드 강화)
+                setKeywords(['#병원소식', '#이달의이벤트', '#건강상식', '#진료안내', '#환자후기', '#의료진소개', '#첨단장비', '#야간진료', '#주차안내', '#위치안내']);
+            }
+        }
+
+        function createTypeCard(id, emoji, title, desc, checked = false) {
+            return `<label class="cursor-pointer">
+                <input type="radio" name="gen_type" value="${id}" class="hidden peer" ${checked ? 'checked' : ''}>
+                <div class="border border-gray-200 rounded-xl p-4 text-center h-full transition peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700">
+                    <div class="text-2xl mb-1">${emoji}</div>
+                    <div class="font-bold text-xs mb-1">${title}</div>
+                </div>
+            </label>`;
+        }
+
+        function setKeywords(list) {
+            const container = document.getElementById('keyword-container');
+            const extendedList = (list.length > 3 && list[0].includes('임플란트')) 
+                ? ['#임플란트', '#치아교정', '#틀니교정', '#무통치료', '#심미보철', '#원데이보철', '#사랑니발치', '#스케일링', '#치아미백', '#어린이치과']
+                : ['#병원소식', '#이달의이벤트', '#건강상식', '#진료안내', '#환자후기', '#의료진소개', '#첨단장비', '#야간진료', '#주차안내', '#위치안내'];
+
+            container.innerHTML = extendedList.map(kw => `
+                <button type="button" onclick="this.classList.toggle('bg-orange-50'); this.classList.toggle('text-orange-600'); this.classList.toggle('border-orange-200');" class="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-medium border border-transparent transition hover:bg-gray-200">
+                    ${kw}
+                </button>
+            `).join('');
+        }
+
+        async function handleCreateSubmit() {
+            const selectedBadges = Array.from(document.querySelectorAll('#keyword-container .bg-orange-50'))
+                                        .map(btn => btn.innerText.trim());
+            const customInput = document.getElementById('custom-keyword').value.trim();
+            
+            // 💡 AI 적절성 판단 로직 추가
+            if (customInput) {
+                // 의료법 위반 가능성이 높은 금지어 리스트 (AI 판단 기준 예시)
+                const forbiddenWords = ['최고', '제일', '가장', '완치', '전문의', '부작용 없음', '최저가'];
+                const foundWord = forbiddenWords.find(word => customInput.includes(word));
+
+                if (foundWord) {
+                    alert(`⚠️ 입력하신 키워드에 부적절한 표현('${foundWord}')이 포함되어 있습니다.\n의료 광고법 위반 소지가 있으므로 수정이 권장됩니다.`);
+                    return; // 중단하여 수정을 유도
+                }
+            }
+
+            const finalKeywords = [...selectedBadges, customInput].filter(k => k).join(", ");
+
+            if (!finalKeywords) {
+                alert('키워드를 선택하거나 입력해주세요!');
+                return;
+            }
+
+            const type = new URLSearchParams(window.location.search).get('type') || 'video';
+            
+            // 데이터 저장 후 이동
+            saveTempContent(type, finalKeywords);
+            location.href = 'scan.html';
+        }
+    </script>
+</body>
+</html>

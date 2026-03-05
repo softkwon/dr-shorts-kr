@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>콘텐츠 라이브러리 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+
+    <div id="header-placeholder"></div>
+
+    <main class="responsive-container pt-10 px-4">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-black text-gray-800 mb-2 italic">Content Library</h2>
+                <p class="text-sm text-gray-500">생성된 모든 콘텐츠와 성과 리포트를 관리합니다.</p>
+            </div>
+            
+            <div class="w-full md:w-auto flex flex-wrap gap-2">
+                <select id="filter-type" onchange="renderLibrary()" class="bg-white border border-gray-200 px-3 py-2 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500">
+                    <option value="all">전체 유형</option>
+                    <option value="video">영상(쇼츠)</option>
+                    <option value="sns">SNS 게시글</option>
+                </select>
+                <input type="text" id="search-keyword" onkeyup="renderLibrary()" placeholder="키워드 검색..." class="bg-white border border-gray-200 px-3 py-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-orange-500">
+            </div>
+        </div>
+
+        <div id="library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
+    </main>
+
+    <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-900 text-2xl">✕</button>
+            
+            <div class="p-8">
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center text-3xl" id="modal-icon">🎬</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800" id="modal-title">콘텐츠 제목</h3>
+                        <p class="text-sm text-gray-400" id="modal-date">생성일: 2026-03-05</p>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-gray-800 mb-4 flex items-center"><span class="mr-2">📈</span> 성과 상세 분석 리포트</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <p class="text-[10px] font-bold text-gray-400 mb-1">조회수</p>
+                        <p class="text-lg font-black text-gray-800">2.4k</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <p class="text-[10px] font-bold text-gray-400 mb-1">지속률</p>
+                        <p class="text-lg font-black text-gray-800">72%</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <p class="text-[10px] font-bold text-gray-400 mb-1">링크클릭</p>
+                        <p class="text-lg font-black text-blue-600">84회</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <p class="text-[10px] font-bold text-gray-400 mb-1">안심번호전화</p>
+                        <p class="text-lg font-black text-orange-500">12건</p>
+                    </div>
+                </div>
+
+                <div class="bg-orange-50 p-5 rounded-2xl border border-orange-100 mb-8">
+                    <p class="text-xs font-bold text-orange-800 mb-2">💡 AI 성과 요약 및 제언</p>
+                    <p class="text-xs text-orange-700 leading-relaxed" id="modal-ai-feedback">
+                        이 콘텐츠는 '시청지속률'이 평균 대비 15% 높습니다. 특히 도입부 3초 구간의 반응이 좋아 유사한 후크(Hook)를 다음 영상에도 활용하는 것을 추천합니다.
+                    </p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="location.href='publish.html'" class="flex-grow theme-bg text-white py-3 rounded-xl font-bold">재송출 하기</button>
+                    <button onclick="closeModal()" class="flex-grow bg-gray-100 text-gray-500 py-3 rounded-xl font-bold">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => { renderLibrary(); });
+
+        function renderLibrary() {
+            const grid = document.getElementById('library-grid');
+            const typeFilter = document.getElementById('filter-type').value;
+            const keyword = document.getElementById('search-keyword').value.toLowerCase();
+            const myContents = JSON.parse(localStorage.getItem('myContents') || '[]');
+
+            // 필터링 로직
+            const filtered = myContents.filter(item => {
+                const matchesType = typeFilter === 'all' || item.type === typeFilter;
+                const matchesKeyword = (item.keywords || '').toLowerCase().includes(keyword);
+                return matchesType && matchesKeyword;
+            }).reverse();
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400">검색 조건에 맞는 콘텐츠가 없습니다.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div onclick="openReport(${item.id})" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="aspect-square bg-gray-100 relative overflow-hidden">
+                        <img src="https://via.placeholder.com/300x300/f97316/ffffff?text=${item.type === 'video' ? 'VIDEO' : 'SNS'}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            <span class="text-white text-xs font-bold border border-white px-3 py-1 rounded-full">리포트 보기</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[9px] font-black text-orange-500 uppercase tracking-tighter">${item.type || 'Content'}</span>
+                            <span class="text-[9px] text-gray-400">${item.date}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-gray-800 truncate">${item.keywords || '새로운 콘텐츠'}</h4>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openReport(id) {
+            const myContents = JSON.parse(localStorage.getItem('myContents') || '[]');
+            const content = myContents.find(c => c.id == id);
+            
+            if (content) {
+                document.getElementById('modal-title').innerText = content.keywords || '진료 안내 콘텐츠';
+                document.getElementById('modal-date').innerText = `생성일: ${content.date}`;
+                document.getElementById('modal-icon').innerText = content.type === 'sns' ? '📝' : '🎬';
+                document.getElementById('report-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+    </script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState } from './auth.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
+            loadComponent('header-placeholder', 'header.html', () => {
+                checkLoginState(); 
+            });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>
