@@ -1,16 +1,12 @@
 /* 날짜: 2026-03-06
-코드이름: api/veo.js
-수정할 부분 내용: Vercel 서버리스 백엔드 로직 작성 (구글 서비스 계정 인증 및 Veo API 호출 처리)
+코드이름: api/veo.js (강화된 버전)
+수정할 부분 내용: 구글 서버의 비정상(HTML) 응답에 대한 예외 처리 강화 및 파라미터 디코딩 추가
 */
-
 import { GoogleAuth } from 'google-auth-library';
 
 export default async function handler(req, res) {
     try {
-        // 💡 Vercel 환경 변수에 등록할 구글 JSON 마스터키를 읽어옵니다.
         const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-        
-        // 💡 마스터키를 이용해 1시간짜리 임시 토큰을 "서버가 알아서" 자동 발급받습니다.
         const auth = new GoogleAuth({
             credentials,
             scopes: ['https://www.googleapis.com/auth/cloud-platform']
@@ -22,7 +18,7 @@ export default async function handler(req, res) {
         const LOCATION = "us-central1";
 
         // ==========================================
-        // [1] POST 요청: 프론트엔드가 "영상 만들어줘!" 할 때
+        // [1] POST 요청: 비디오 생성 시작
         // ==========================================
         if (req.method === 'POST') {
             const { script } = req.body;
@@ -40,29 +36,45 @@ export default async function handler(req, res) {
                 })
             });
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error?.message || "Veo API 시작 오류");
+            // 💡 1차 방어: JSON 파싱 전 텍스트로 먼저 받기
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } 
+            catch(e) { throw new Error(`POST 응답 에러 (JSON 아님): ${text.substring(0, 100)}`); }
             
-            // 작업 번호(Operation ID)만 프론트엔드로 바로 돌려보냅니다.
+            if (!response.ok) throw new Error(data.error?.message || "Veo API 시작 오류");
             return res.status(200).json({ operationName: data.name });
         }
 
         // ==========================================
-        // [2] GET 요청: 프론트엔드가 5초마다 "영상 다 됐어?" 물어볼 때
+        // [2] GET 요청: 비디오 생성 상태 확인
         // ==========================================
         if (req.method === 'GET') {
-            const { operationName } = req.query;
+            let { operationName } = req.query;
+            if(!operationName) throw new Error("operationName 파라미터가 없습니다.");
+            
+            // 💡 2차 방어: URL 인코딩 문자열을 완벽하게 해독
+            operationName = decodeURIComponent(operationName); 
+
             const OPERATION_URL = `https://${LOCATION}-aiplatform.googleapis.com/v1/${operationName}`;
 
             const response = await fetch(OPERATION_URL, {
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${accessToken}` }
+                headers: { 'Authorization': `Bearer ${accessToken}` },
+                cache: 'no-store' // 💡 3차 방어: 이전 확인 결과를 재사용(캐시)하지 않도록 강제
             });
 
-            const data = await response.json();
+            // 💡 핵심 방어: 무작정 json()으로 읽지 않고 에러 발생 시 HTML 내용을 출력하도록 처리
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (error) {
+                console.error("🚨 구글 서버가 JSON이 아닌 데이터를 반환했습니다:", text.substring(0, 200));
+                throw new Error(`구글 서버 응답 오류. URL: ${OPERATION_URL}`);
+            }
+
             if (!response.ok) throw new Error(data.error?.message || "Veo API 상태 확인 오류");
-            
-            // 구글이 준 현재 상태를 그대로 프론트엔드에 전달합니다.
             return res.status(200).json(data);
         }
 
