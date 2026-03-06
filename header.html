@@ -11,21 +11,26 @@
                 </button>
             </div>
 
-            <div id="auth-area" class="hidden relative">
-                <button onclick="toggleUserMenu()" class="user-menu-btn flex items-center text-sm md:text-base font-medium text-gray-700 hover:text-orange-500 transition focus:outline-none">
-                    <span>안녕하세요, </span>
-                    <span class="user-name-text font-bold ml-1 text-gray-900">원장</span>님 
-                    <span class="ml-1 text-[10px]">▼</span>
-                </button>
+            <div class="relative group cursor-pointer flex items-center h-full py-2">
+    
+                <a href="billing.html" class="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-[11px] font-black px-2 py-1 rounded shadow-sm mr-2 hover:opacity-80 transition">
+                    <span id="headerPlanName">Pro</span>
+                </a>
                 
-                <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-40 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
-                    <a href="profile.html" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
-                        회원정보 수정
-                    </a>
-                    <div class="border-t border-gray-50 my-1"></div>
-                    <button onclick="handleLogout()" class="w-full text-left block px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition">
-                        로그아웃
-                    </button>
+                <span class="text-sm font-bold text-gray-700 mr-2">안녕하세요, <span id="userNameDisplay" class="text-orange-600">영석</span>님 ▼</span>
+                
+                <div class="absolute right-0 top-full mt-0 pt-2 w-56 hidden group-hover:block z-50">
+                    <div class="bg-white rounded-xl shadow-lg py-2 border border-gray-100">
+                        <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">⚙️ 회원정보 수정</a>
+                        <a href="billing.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">💳 결제/구독 관리</a>
+                        <hr class="my-2 border-gray-100">
+                        <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition">🚪 로그아웃</a>
+                        
+                        <div class="px-4 py-3 mt-1 bg-gray-50 flex justify-between items-center rounded-b-xl border-t border-gray-100">
+                            <span class="text-[11px] text-gray-500 font-bold">자동 로그아웃</span>
+                            <span id="logout-timer" class="font-mono text-red-500 font-bold text-xs bg-red-50 px-2 py-1 rounded">90:00</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

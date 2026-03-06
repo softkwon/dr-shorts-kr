@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>안전 결제 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white max-w-md w-full rounded-3xl shadow-xl overflow-hidden">
+        <div class="bg-gray-800 text-white p-6 text-center">
+            <h1 class="text-xl font-black tracking-tight mb-1">Dr. SHORTS 결제</h1>
+            <p class="text-gray-300 text-xs">안전한 결제 시스템을 통해 진행됩니다.</p>
+        </div>
+
+        <div class="p-6 border-b border-gray-100 bg-gray-50">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-bold text-gray-600">결제 상품</span>
+                <span id="planNameDisplay" class="font-black text-gray-800">로딩 중...</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm font-bold text-gray-600">총 결제 금액</span>
+                <span id="planPriceDisplay" class="text-xl font-black text-orange-500">...</span>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <label class="block text-xs font-bold text-gray-600 mb-2">🎁 프로모션 코드 (선택)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="promoCodeInput" placeholder="할인 코드 입력" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:outline-none bg-white">
+                    <button onclick="applyPromo()" class="bg-gray-800 text-white font-bold px-4 py-2 rounded-lg text-sm shrink-0 hover:bg-gray-700">적용</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">카드 번호</label>
+                <input type="text" placeholder="0000 - 0000 - 0000 - 0000" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-orange-500 focus:outline-none bg-white tracking-widest">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">유효기간</label>
+                    <input type="text" placeholder="MM / YY" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-orange-500 focus:outline-none bg-white text-center">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">CVC / 비밀번호 앞 2자리</label>
+                    <div class="flex gap-2">
+                        <input type="password" placeholder="CVC" class="w-1/2 border border-gray-300 rounded-xl px-2 py-3 text-sm text-center focus:border-orange-500 focus:outline-none bg-white">
+                        <input type="password" placeholder="**" class="w-1/2 border border-gray-300 rounded-xl px-2 py-3 text-sm text-center focus:border-orange-500 focus:outline-none bg-white">
+                    </div>
+                </div>
+            </div>
+            
+            <button id="finalPayBtn" onclick="processPayment()" class="w-full bg-orange-500 text-white font-black py-4 rounded-xl mt-4 hover:bg-orange-600 transition shadow-lg text-lg">
+                결제하기
+            </button>
+            <p class="text-center text-[10px] text-gray-400 mt-3">결제하기 버튼을 클릭하면 약관에 동의한 것으로 간주됩니다.</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. URL에서 넘겨받은 정보 읽기
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan') || 'Pro';
+        let originalPrice = parseInt(urlParams.get('price')) || 1000000;
+        let finalPrice = originalPrice;
+        let isPromoApplied = false;
+
+        // 2. 화면 초기 세팅
+        document.getElementById('planNameDisplay').innerText = `${plan} 플랜 (월간)`;
+        document.getElementById('planPriceDisplay').innerText = `${originalPrice.toLocaleString()}원`;
+        document.getElementById('finalPayBtn').innerText = `${finalPrice.toLocaleString()}원 결제하기`;
+
+        // 3. 프로모션 코드 적용 기능
+        function applyPromo() {
+            if (isPromoApplied) return alert('이미 할인이 적용되었습니다.');
+            
+            const codeInput = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+            
+            // 테스트용 코드: "DRSHORTS2026" (10% 할인)
+            if (codeInput === 'DRSHORTS2026') {
+                finalPrice = originalPrice * 0.9; // 10% 할인
+                isPromoApplied = true;
+                
+                alert('10% 프로모션 할인이 적용되었습니다!');
+                
+                // 가격 표시 업데이트 (취소선 추가)
+                document.getElementById('planPriceDisplay').innerHTML = `
+                    <span class="line-through text-gray-400 text-sm mr-2 font-normal">${originalPrice.toLocaleString()}원</span>
+                    <span class="text-xl font-black text-orange-500">${finalPrice.toLocaleString()}원</span>
+                `;
+                document.getElementById('finalPayBtn').innerText = `${finalPrice.toLocaleString()}원 결제하기`;
+                document.getElementById('promoCodeInput').disabled = true; // 입력창 잠금
+            } else {
+                alert('유효하지 않은 프로모션 코드입니다.\n(테스트 코드: DRSHORTS2026)');
+            }
+        }
+
+        // 4. 결제 처리
+        function processPayment() {
+            const btn = document.getElementById('finalPayBtn');
+            btn.innerHTML = '결제 처리 중... ⏳';
+            btn.disabled = true;
+            btn.classList.replace('bg-orange-500', 'bg-gray-400');
+
+            setTimeout(() => {
+                alert(`결제가 성공적으로 완료되었습니다!\n결제 금액: ${finalPrice.toLocaleString()}원`);
+                if(window.opener) window.opener.location.reload();
+                window.close();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

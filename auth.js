@@ -41,3 +41,32 @@ window.handleAuthClick = function() {
         location.href = 'login.html';
     }
 };
+
+/* 날짜: 2026-03-06*/
+
+let logoutInterval;
+
+export function startLogoutTimer() {
+    let timeRemaining = 90 * 60; // 90분 (5400초)
+
+    if (logoutInterval) clearInterval(logoutInterval);
+
+    logoutInterval = setInterval(() => {
+        timeRemaining--;
+        
+        // 매 초마다 요소를 찾아서 업데이트 (헤더가 늦게 로딩되는 것을 대비)
+        const timerDisplay = document.getElementById('logout-timer');
+        if (timerDisplay) {
+            const minutes = String(Math.floor(timeRemaining / 60)).padStart(2, '0');
+            const seconds = String(timeRemaining % 60).padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+
+        if (timeRemaining <= 0) {
+            clearInterval(logoutInterval);
+            alert("보안을 위해 90분이 경과하여 자동 로그아웃 되었습니다.");
+            localStorage.removeItem('currentUser'); // 로그인 정보 삭제
+            window.location.href = 'login.html'; // 로그인 화면으로 튕겨냄
+        }
+    }, 1000);
+}
