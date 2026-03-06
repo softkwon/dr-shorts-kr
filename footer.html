@@ -1,4 +1,4 @@
-<footer class="theme-bg w-full py-8 mt-auto border-t border-orange-400">
+<footer class="theme-bg w-full py-8 mt-auto border-t border-orange-400 relative">
     <div class="responsive-container flex flex-col md:flex-row justify-between items-start text-orange-50 text-sm gap-6">
         
         <div class="flex flex-col space-y-2 text-left tracking-wide">
@@ -6,10 +6,12 @@
             <p>상호: 이즈인사이트 | 대표: 이제윤 | 사업자등록번호: 333-86-03181</p>
             <p>충북 청주시 흥덕구 가로수로1251(충북대지테크벤처센터) 303-1호 | 문의: master@DrShorts.kr</p>
             
-            <div class="flex space-x-2 pt-1 font-bold text-white">
+            <div class="flex space-x-2 pt-1 font-bold text-white items-center relative">
                 <a href="#" class="hover:text-orange-200 transition">이용약관</a>
                 <span class="text-orange-200">|</span>
                 <a href="#" class="hover:text-orange-200 transition">개인정보처리방침</a>
+                
+                <div onclick="document.getElementById('adminLoginModal').classList.replace('hidden', 'flex'); setTimeout(() => document.getElementById('masterId').focus(), 100);" class="w-6 h-6 ml-2 cursor-pointer opacity-0 hover:opacity-20 bg-white rounded transition duration-300" title="System Admin"></div>
             </div>
         </div>
 
@@ -24,3 +26,27 @@
         
     </div>
 </footer>
+
+<div id="adminLoginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999] backdrop-blur-sm text-left text-gray-800">
+    <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl mx-4">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-black text-gray-800">마스터 권한 인증</h3>
+            <button onclick="document.getElementById('adminLoginModal').classList.replace('flex', 'hidden'); document.getElementById('masterId').value=''; document.getElementById('masterPw').value='';" class="text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
+        </div>
+        
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">마스터 ID</label>
+                <input type="text" id="masterId" autocomplete="off" placeholder="ID 입력" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-orange-500 focus:outline-none bg-gray-50 text-gray-800">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">비밀번호</label>
+                <input type="password" id="masterPw" autocomplete="off" placeholder="비밀번호 입력" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-orange-500 focus:outline-none bg-gray-50 text-gray-800" onkeypress="if(event.key==='Enter') document.getElementById('adminLoginBtn').click();">
+            </div>
+        </div>
+        
+        <button id="adminLoginBtn" onclick="if(document.getElementById('masterId').value.trim()==='master' && document.getElementById('masterPw').value.trim()==='1111'){ alert('인증되었습니다. 관리자 페이지로 이동합니다.'); window.location.href='admin.html'; } else { alert('마스터 계정 정보가 일치하지 않습니다.'); document.getElementById('masterPw').value=''; document.getElementById('masterPw').focus(); }" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-700 transition shadow-lg">
+            시스템 접속하기
+        </button>
+    </div>
+</div>

@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 모드 - Dr. SHORTS KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { background-color: #1f2937; color: white; border-color: #1f2937; }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-6">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-gray-800 flex items-center"><span class="mr-3 text-4xl">🛠️</span> 관리자 제어판</h2>
+            <p class="text-gray-500 mt-2">시스템 데이터 및 회원 정보를 관리하는 마스터 페이지입니다.</p>
+        </div>
+
+        <div class="flex space-x-2 mb-8 border-b border-gray-200 pb-4 overflow-x-auto">
+            <button onclick="switchTab('members')" id="btn-members" class="tab-btn active px-6 py-2 rounded-full font-bold text-sm border border-gray-300 text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">👥 회원 등급 관리</button>
+            <button onclick="switchTab('keywords')" id="btn-keywords" class="tab-btn px-6 py-2 rounded-full font-bold text-sm border border-gray-300 text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">🏷️ Create 키워드 관리</button>
+            <button onclick="switchTab('news')" id="btn-news" class="tab-btn px-6 py-2 rounded-full font-bold text-sm border border-gray-300 text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">📢 Dr. SHORTS 소식 관리</button>
+            <button onclick="switchTab('stats')" id="btn-stats" class="tab-btn px-6 py-2 rounded-full font-bold text-sm border border-gray-300 text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">📊 대시보드 관리</button>
+        </div>
+
+        <section id="tab-members" class="tab-content active bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <h3 class="font-bold text-gray-800 mb-6 flex items-center"><span class="text-xl mr-2">👥</span> 전체 회원 목록</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600">
+                    <thead class="bg-gray-50 border-y border-gray-100">
+                        <tr>
+                            <th class="py-3 px-4">가입일</th>
+                            <th class="py-3 px-4">이름</th>
+                            <th class="py-3 px-4">이메일</th>
+                            <th class="py-3 px-4">현재 등급</th>
+                            <th class="py-3 px-4 text-center">등급 조정</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="tab-keywords" class="tab-content bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <h3 class="font-bold text-gray-800 mb-2 flex items-center"><span class="text-xl mr-2">🏷️</span> 추천 키워드 마스터 관리</h3>
+            <p class="text-xs text-gray-500 mb-6">여기에 추가된 키워드는 사용자들의 '영상 생성(Create)' 화면 추천 키워드 목록에 실시간으로 반영됩니다.</p>
+            <div class="flex gap-2 mb-8 max-w-md">
+                <input type="text" id="newKeywordInput" placeholder="예: #디지털임플란트" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-orange-500 focus:outline-none">
+                <button onclick="addKeyword()" class="bg-orange-500 text-white font-bold px-6 py-2 rounded-xl text-sm shrink-0 hover:bg-orange-600 transition">+ 추가</button>
+            </div>
+            <div class="flex flex-wrap gap-2" id="keywordsList"></div>
+        </section>
+
+        <section id="tab-news" class="tab-content bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <h3 class="font-bold text-gray-800 mb-2 flex items-center"><span class="text-xl mr-2">📢</span> 공지사항 및 소식 등록</h3>
+            <p class="text-xs text-gray-500 mb-6">대시보드 메인 화면에 띄워줄 새로운 소식을 등록합니다.</p>
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">소식 제목</label>
+                    <input type="text" id="newsTitleInput" placeholder="공지사항 제목을 입력하세요" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">분류</label>
+                    <select id="newsTypeInput" class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <option value="공지">공지</option>
+                        <option value="업데이트">업데이트</option>
+                        <option value="이벤트">이벤트</option>
+                    </select>
+                </div>
+                <button onclick="addNews()" class="bg-gray-800 text-white font-bold px-6 py-3 rounded-xl text-sm hover:bg-gray-700 transition">소식 등록하기</button>
+            </div>
+            <div class="space-y-3" id="newsList"></div>
+        </section>
+
+        <section id="tab-stats" class="tab-content bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="font-bold text-gray-800 flex items-center"><span class="text-xl mr-2">📊</span> 대시보드 통계 & 레퍼런스 관리</h3>
+                    <p class="text-xs text-gray-500 mt-1">이곳에서 수정 후 '변경사항 저장'을 누르면 유저 대시보드 차트에 실시간으로 반영됩니다.</p>
+                </div>
+                <button onclick="saveDashboardStats()" class="bg-orange-500 text-white font-bold px-6 py-3 rounded-xl text-sm hover:bg-orange-600 transition shadow-md">
+                    변경사항 일괄 저장
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <h4 class="font-bold text-sm text-gray-800 mb-4 border-b pb-2">🔥 핫 키워드 (5개)</h4>
+                    <div class="space-y-3" id="adminHotKeywords">
+                        </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <h4 class="font-bold text-sm text-gray-800 mb-4 border-b pb-2">📺 숏폼 채널 트래픽 점유율 (3개)</h4>
+                    <div class="space-y-3" id="adminHotChannels">
+                        </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <h4 class="font-bold text-sm text-gray-800 mb-4 border-b pb-2">🏆 시장 인기 콘텐츠 레퍼런스 (3개)</h4>
+                    <div class="space-y-4" id="adminPopularContents">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // --- 기본 탭 로직 ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('btn-' + tabName).classList.add('active');
+        }
+
+        // --- 1~3번 탭 로직 생략 없이 그대로 유지 (공간 절약을 위해 축약 안 함) ---
+        let sysMembers = JSON.parse(localStorage.getItem('sys_members')) || [
+            { id: 1, date: '2026-03-01', name: '영석', email: 'ceo@esg.com', tier: 'Pro' },
+            { id: 2, date: '2026-03-02', name: '김원장', email: 'kim@dent.com', tier: 'Free' }
+        ];
+        function renderMembers() {
+            const tbody = document.getElementById('membersTableBody');
+            tbody.innerHTML = sysMembers.map((m, i) => `
+                <tr class="border-b border-gray-50">
+                    <td class="py-4 px-4 font-mono text-xs">${m.date}</td>
+                    <td class="py-4 px-4 font-bold text-gray-800">${m.name}</td>
+                    <td class="py-4 px-4 text-xs">${m.email}</td>
+                    <td class="py-4 px-4"><span class="text-xs font-bold px-2 py-1 rounded bg-gray-100">${m.tier}</span></td>
+                    <td class="py-4 px-4 text-center">
+                        <select onchange="changeTier(${i}, this.value)" class="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-orange-500">
+                            <option value="Free" ${m.tier === 'Free' ? 'selected' : ''}>Free</option>
+                            <option value="Pro" ${m.tier === 'Pro' ? 'selected' : ''}>Pro</option>
+                            <option value="Premium" ${m.tier === 'Premium' ? 'selected' : ''}>Premium</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+            localStorage.setItem('sys_members', JSON.stringify(sysMembers));
+        }
+        function changeTier(index, newTier) { sysMembers[index].tier = newTier; renderMembers(); alert('등급이 변경되었습니다.'); }
+
+        let sysKeywords = JSON.parse(localStorage.getItem('sys_keywords')) || ['#무통임플란트', '#어린이치과', '#라미네이트', '#치아미백', '#수면마취'];
+        function renderKeywords() {
+            document.getElementById('keywordsList').innerHTML = sysKeywords.map((kw, i) => `
+                <div class="flex items-center bg-gray-100 text-gray-700 text-sm font-bold px-4 py-2 rounded-full border border-gray-200">
+                    ${kw} <button onclick="deleteKeyword(${i})" class="ml-2 text-gray-400 hover:text-red-500">✕</button>
+                </div>
+            `).join('');
+            localStorage.setItem('sys_keywords', JSON.stringify(sysKeywords));
+        }
+        function addKeyword() {
+            const val = document.getElementById('newKeywordInput').value.trim();
+            if(!val) return alert("키워드를 입력해주세요.");
+            sysKeywords.push(val.startsWith('#') ? val : '#' + val);
+            document.getElementById('newKeywordInput').value = '';
+            renderKeywords();
+        }
+        function deleteKeyword(index) { sysKeywords.splice(index, 1); renderKeywords(); }
+
+        let sysNews = JSON.parse(localStorage.getItem('sys_news')) || [
+            { id: 1, type: '공지', title: 'Dr. SHORTS KR 정식 오픈 안내', date: '2026-03-01' }
+        ];
+        function renderNews() {
+            document.getElementById('newsList').innerHTML = sysNews.map((news, i) => {
+                const c = news.type === '공지' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600';
+                return `<div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="flex items-center"><span class="text-[10px] font-bold px-2 py-1 rounded-md mr-3 ${c}">${news.type}</span><span class="text-sm font-bold text-gray-800">${news.title}</span></div>
+                    <button onclick="deleteNews(${i})" class="text-xs text-red-400 font-bold">삭제</button>
+                </div>`;
+            }).join('');
+            localStorage.setItem('sys_news', JSON.stringify(sysNews));
+        }
+        function addNews() {
+            const title = document.getElementById('newsTitleInput').value.trim();
+            if(!title) return alert("제목을 입력해주세요.");
+            sysNews.unshift({ id: Date.now(), type: document.getElementById('newsTypeInput').value, title: title, date: new Date().toISOString().split('T')[0] });
+            document.getElementById('newsTitleInput').value = ''; renderNews(); alert("등록되었습니다.");
+        }
+        function deleteNews(index) { if(confirm("삭제하시겠습니까?")) { sysNews.splice(index, 1); renderNews(); } }
+
+
+        // 💡 --- 4. 대시보드 통계 관리 로직 --- 💡
+        const defaultDashboardStats = {
+            hotKeywords: [
+                {name: '#임플란트', val: 85}, {name: '#치아교정', val: 62}, {name: '#투명교정', val: 45}, {name: '#라미네이트', val: 38}, {name: '#사랑니', val: 20}
+            ],
+            hotChannels: [
+                {name: 'YouTube Shorts', val: 55}, {name: 'Instagram Reels', val: 30}, {name: 'Naver Clip', val: 15}
+            ],
+            popularContents: [
+                {title: '"원장님 등판! 교정기 빼는 날 브이로그"', desc: '조회수 125만회 · 유튜브 쇼츠', link: 'https://youtube.com/shorts/v-p_kFkOYjY'},
+                {title: '"치아미백 하기 전 무조건 보세요 (1분 요약)"', desc: '조회수 89만회 · 인스타그램 릴스', link: 'https://youtube.com/shorts/0eU4VwTqNRo'},
+                {title: '"수면 임플란트, 진짜 하나도 안 아플까?"', desc: '조회수 56만회 · 유튜브 쇼츠', link: 'https://youtube.com/shorts/z63r5tgNAns'}
+            ]
+        };
+
+        let sysDashboardStats = JSON.parse(localStorage.getItem('sys_dashboard_stats')) || defaultDashboardStats;
+
+        function renderDashboardStats() {
+            // 키워드 5개 그리기
+            document.getElementById('adminHotKeywords').innerHTML = sysDashboardStats.hotKeywords.map((k, i) => `
+                <div class="flex gap-2 items-center">
+                    <span class="w-4 text-xs font-bold text-gray-400">${i+1}</span>
+                    <input type="text" id="kw-name-${i}" value="${k.name}" placeholder="키워드명" class="w-2/3 border rounded px-3 py-1.5 text-sm focus:border-orange-500 outline-none">
+                    <input type="number" id="kw-val-${i}" value="${k.val}" placeholder="지수" class="w-1/3 border rounded px-3 py-1.5 text-sm text-center focus:border-orange-500 outline-none">
+                </div>
+            `).join('');
+
+            // 채널 3개 그리기
+            document.getElementById('adminHotChannels').innerHTML = sysDashboardStats.hotChannels.map((c, i) => `
+                <div class="flex gap-2 items-center">
+                    <span class="w-4 text-xs font-bold text-gray-400">${i+1}</span>
+                    <input type="text" id="ch-name-${i}" value="${c.name}" placeholder="채널명" class="w-2/3 border rounded px-3 py-1.5 text-sm focus:border-orange-500 outline-none">
+                    <input type="number" id="ch-val-${i}" value="${c.val}" placeholder="%" class="w-1/3 border rounded px-3 py-1.5 text-sm text-center focus:border-orange-500 outline-none">
+                </div>
+            `).join('');
+
+            // 콘텐츠 3개 그리기
+            document.getElementById('adminPopularContents').innerHTML = sysDashboardStats.popularContents.map((c, i) => `
+                <div class="flex flex-col md:flex-row gap-2 items-start md:items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                    <span class="font-black text-orange-500 w-6 text-center shrink-0">${i+1}</span>
+                    <div class="flex-grow space-y-2 w-full">
+                        <input type="text" id="pc-title-${i}" value="${c.title.replace(/"/g, '&quot;')}" placeholder="콘텐츠 제목" class="w-full border rounded px-3 py-1.5 text-sm font-bold focus:border-orange-500 outline-none">
+                        <div class="flex gap-2">
+                            <input type="text" id="pc-desc-${i}" value="${c.desc}" placeholder="조회수 및 채널 요약 (예: 조회수 100만회 · 릴스)" class="w-1/2 border rounded px-3 py-1.5 text-xs focus:border-orange-500 outline-none">
+                            <input type="text" id="pc-link-${i}" value="${c.link}" placeholder="https:// 링크 주소" class="w-1/2 border rounded px-3 py-1.5 text-xs text-blue-500 focus:border-orange-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 입력된 값을 저장하는 함수
+        function saveDashboardStats() {
+            try {
+                // 키워드 저장
+                for(let i=0; i<5; i++) {
+                    sysDashboardStats.hotKeywords[i].name = document.getElementById(`kw-name-${i}`).value;
+                    sysDashboardStats.hotKeywords[i].val = Number(document.getElementById(`kw-val-${i}`).value);
+                }
+                // 채널 저장
+                for(let i=0; i<3; i++) {
+                    sysDashboardStats.hotChannels[i].name = document.getElementById(`ch-name-${i}`).value;
+                    sysDashboardStats.hotChannels[i].val = Number(document.getElementById(`ch-val-${i}`).value);
+                }
+                // 콘텐츠 저장
+                for(let i=0; i<3; i++) {
+                    sysDashboardStats.popularContents[i].title = document.getElementById(`pc-title-${i}`).value;
+                    sysDashboardStats.popularContents[i].desc = document.getElementById(`pc-desc-${i}`).value;
+                    sysDashboardStats.popularContents[i].link = document.getElementById(`pc-link-${i}`).value;
+                }
+
+                localStorage.setItem('sys_dashboard_stats', JSON.stringify(sysDashboardStats));
+                alert('대시보드 통계 및 레퍼런스가 성공적으로 업데이트 되었습니다!\n유저 화면에 즉시 반영됩니다.');
+            } catch(e) {
+                alert('저장 중 오류가 발생했습니다. 모든 값을 올바르게 입력했는지 확인해 주세요.');
+            }
+        }
+
+        // 초기화
+        renderMembers(); renderKeywords(); renderNews(); renderDashboardStats();
+    </script>
+
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        import { checkLoginState, startLogoutTimer } from './auth.js';
+        window.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html', () => { checkLoginState(); startLogoutTimer(); });
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>

@@ -6,161 +6,233 @@
     <title>대시보드 - Dr. SHORTS KR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="flex flex-col min-h-screen relative bg-gray-50 font-sans">
-
+<body class="bg-gray-50 flex flex-col min-h-screen">
     <div id="header-placeholder"></div>
 
-    <main class="flex-grow pt-8 pb-20 px-4 md:px-8">
-        <div class="responsive-container">
-            
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-2xl">🏥</div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">서울바른치과 <span class="text-sm font-normal text-gray-500">(영석 원장)</span></h2>
-                        <div class="flex items-center mt-1 space-x-2">
-                            <span class="bg-gray-800 text-white px-3 py-0.5 rounded-full text-xs font-bold tracking-wider">Free 등급</span>
-                            <span class="text-xs text-gray-400">이번 달 1회 생성 가능</span>
-                        </div>
-                    </div>
+    <main class="flex-grow max-w-6xl w-full mx-auto p-6 space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <div>
+                <h2 class="text-2xl font-black text-gray-800 mb-2">환영합니다, <span id="dashUserName" class="text-orange-500">영석</span>님! 👋</h2>
+                <p class="text-gray-500 text-sm">현재 <span class="font-bold text-gray-700">Pro 요금제</span>를 이용 중이시며, 이번 달 <span class="font-bold text-orange-500">10회</span>의 영상 생성이 남았습니다.</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
+                <button onclick="location.href='create.html?type=video'" class="flex-grow bg-gray-800 text-white font-bold py-3 px-6 rounded-xl hover:bg-gray-700 transition shadow-md">🎬 영상 생성</button>
+                <button onclick="location.href='create.html?type=sns'" class="flex-grow bg-orange-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-orange-600 transition shadow-md">📝 SNS 글 생성</button>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center"><span class="text-xl mr-2">📊</span> 나의 성과 분석 리포트</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-gray-500 mb-1">이번 달 생성 콘텐츠</p>
+                    <h4 class="text-2xl font-black text-gray-800">12<span class="text-sm font-normal text-gray-400 ml-1">건</span></h4>
                 </div>
-                <button onclick="toggleMembershipModal(true)" class="w-full md:w-auto border-2 border-orange-500 text-orange-500 hover:bg-orange-50 px-5 py-2 rounded-lg font-bold transition text-sm">
-                    회원등급 관리
-                </button>
-            </section>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-gray-500 mb-1">송출 완료 채널</p>
+                    <h4 class="text-2xl font-black text-gray-800">3<span class="text-sm font-normal text-gray-400 ml-1">곳</span></h4>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-gray-500 mb-1">누적 예상 도달률</p>
+                    <h4 class="text-2xl font-black text-blue-500">15.2<span class="text-sm font-normal text-gray-400 ml-1">K</span></h4>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-gray-500 mb-1">전월 대비 성장률</p>
+                    <h4 class="text-2xl font-black text-red-500">▲ 24<span class="text-sm font-normal text-gray-400 ml-1">%</span></h4>
+                </div>
+            </div>
+        </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <section class="lg:col-span-2">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
-                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center"><span class="mr-2">📊</span>성과 분석 리포트</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="text-xs text-blue-600 font-bold mb-1">조회수</p><p class="text-xl font-extrabold text-blue-900">12,450</p></div>
-                            <div class="bg-green-50 p-4 rounded-xl border border-green-100"><p class="text-xs text-green-600 font-bold mb-1">시청지속률</p><p class="text-xl font-extrabold text-green-900">68%</p></div>
-                            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100"><p class="text-[10px] text-purple-600 font-bold mb-1">전환 추적</p><p class="text-xl font-extrabold text-purple-900">450</p></div>
-                            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100"><p class="text-xs text-orange-600 font-bold mb-1">안심번호</p><p class="text-xl font-extrabold text-orange-900">24</p></div>
-                        </div>
-                        <div class="h-40 bg-gray-50 border border-dashed border-gray-200 rounded-xl flex items-center justify-center text-gray-400 text-xs">성과 그래프 영역</div>
-                    </div>
-                </section>
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-800 flex items-center"><span class="text-xl mr-2">🗂️</span> 최근 내가 만든 콘텐츠</h3>
+                <a href="library.html" class="text-xs font-bold text-gray-400 hover:text-orange-500 transition">전체 서재 보기 +</a>
+            </div>
+            <div id="dashboard-my-contents" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                </div>
+        </div>
 
-                <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-orange-500 flex flex-col items-center justify-center text-center">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">새로운 콘텐츠 만들기</h3>
-                    <p class="text-gray-500 text-sm mb-6">AI 기반 의료법 준수 콘텐츠 생성</p>
-                    <div class="w-full space-y-2">
-                        <button onclick="location.href='create.html?type=video'" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition">🎬 영상 생성</button>
-                        <button onclick="location.href='create.html?type=sns'" class="w-full border-2 border-orange-500 text-orange-500 py-3 rounded-xl font-bold hover:bg-orange-50 transition">📝 SNS 생성</button>
-                    </div>
-                </section>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800 flex items-center"><span class="text-xl mr-2">🔥</span> 이번 주 병의원 핫 키워드</h3>
+                </div>
+                <div class="relative h-64"><canvas id="keywordChart"></canvas></div>
             </div>
 
-            <section class="mt-12">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 flex items-center">🎬 내가 만든 콘텐츠 관리</h3>
-                    <button onclick="location.href='library.html'" class="text-sm font-bold text-orange-500 hover:underline">전체보기 ></button>
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800 flex items-center"><span class="text-xl mr-2">📺</span> 숏폼 채널별 트래픽 점유율</h3>
                 </div>
-                <div id="dashboard-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="relative h-64 flex justify-center"><canvas id="channelChart"></canvas></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-6 flex items-center"><span class="text-xl mr-2">🏆</span> 시장 인기 콘텐츠 레퍼런스</h3>
+                <div id="dashboard-popular-contents" class="space-y-4">
                     </div>
-            </section>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-gray-800 flex items-center"><span class="text-xl mr-2">📢</span> Dr. SHORTS 새로운 소식</h3>
+                    <a href="#" class="text-xs font-bold text-gray-400 hover:text-orange-500 transition">더보기 +</a>
+                </div>
+                <div id="dashboard-news-list" class="space-y-4">
+                    </div>
+            </div>
         </div>
     </main>
 
-    <div id="membership-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden relative">
-            <button onclick="toggleMembershipModal(false)" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-2xl">✕</button>
-            
-            <div class="p-8 md:p-12">
-                <h2 class="text-2xl font-bold text-center mb-2">멤버십 플랜 선택</h2>
-                <p class="text-center text-gray-500 mb-10">병원의 성장에 가장 적합한 플랜을 선택하세요.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="border border-gray-100 rounded-2xl p-6 flex flex-col text-center hover:shadow-lg transition">
-                        <h4 class="font-bold text-gray-800 mb-2">Free</h4>
-                        <p class="text-2xl font-black mb-4">₩0 <span class="text-xs font-normal text-gray-400">/월</span></p>
-                        <ul class="text-xs text-gray-500 space-y-3 mb-8 text-left">
-                            <li class="flex items-center">✅ 월 1회 콘텐츠 생성</li>
-                            <li class="flex items-center">✅ 의료법 기본 스캐닝</li>
-                            <li class="flex items-center text-gray-300">❌ 성과 분석 리포트</li>
-                        </ul>
-                        <button class="mt-auto py-2 rounded-lg border border-gray-200 text-gray-400 text-xs font-bold cursor-default">현재 등급</button>
-                    </div>
-                    <div class="border-2 border-orange-500 rounded-2xl p-6 flex flex-col text-center shadow-md relative">
-                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase">Popular</span>
-                        <h4 class="font-bold text-gray-800 mb-2">Pro</h4>
-                        <p class="text-2xl font-black text-orange-500 mb-4">₩1,000,000 <span class="text-xs font-normal text-gray-400">/월</span></p>
-                        <ul class="text-xs text-gray-500 space-y-3 mb-8 text-left">
-                            <li class="flex items-center">✅ 월 10회 콘텐츠 생성</li>
-                            <li class="flex items-center">✅ AI 자동 보정 기능</li>
-                            <li class="flex items-center">✅ 성과 분석 대시보드</li>
-                        </ul>
-                        <button class="mt-auto py-2 rounded-lg theme-bg text-white text-xs font-bold">등급 업그레이드</button>
-                    </div>
-                    <div class="border border-gray-100 rounded-2xl p-6 flex flex-col text-center hover:shadow-lg transition">
-                        <h4 class="font-bold text-gray-800 mb-2">Premium</h4>
-                        <p class="text-2xl font-black mb-4">₩1,500,000 <span class="text-xs font-normal text-gray-400">/월</span></p>
-                        <ul class="text-xs text-gray-500 space-y-3 mb-8 text-left">
-                            <li class="flex items-center">✅ 무제한 콘텐츠 생성</li>
-                            <li class="flex items-center">✅ 1:1 광고 심의 컨설팅</li>
-                            <li class="flex items-center">✅ CRM 고객 데이터 매칭</li>
-                        </ul>
-                        <button class="mt-auto py-2 rounded-lg border border-gray-800 bg-gray-800 text-white text-xs font-bold">문의하기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="footer-placeholder"></div>
-    <script src="app.js"></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => { renderGallery(); });
 
-        function toggleMembershipModal(show) {
-            const modal = document.getElementById('membership-modal');
-            if (show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
-        }
-
-        function renderGallery() {
-            const gallery = document.getElementById('dashboard-gallery');
-            const myContents = JSON.parse(localStorage.getItem('myContents') || '[]');
-            if (myContents.length > 0) {
-                const latest = myContents.slice().reverse().slice(0, 3);
-                gallery.innerHTML = latest.map(item => `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group">
-                        <div class="aspect-video bg-gray-200 relative">
-                            <img src="https://via.placeholder.com/400x225/f97316/ffffff?text=AI+Generated" class="w-full h-full object-cover">
-                        </div>
-                        <div class="p-4">
-                            <p class="text-[10px] text-orange-500 font-bold mb-1">${item.date}</p>
-                            <h4 class="font-bold text-sm text-gray-800 mb-2 truncate">${item.keywords || '진료 영상'}</h4>
-                            <div class="flex justify-between items-center text-[10px] text-gray-400 border-t pt-2">
-                                <span>📊 조회수 0</span>
-                                <button onclick="location.href='editor.html?id=${item.id}'" class="text-blue-500 font-bold">상세보기</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                gallery.innerHTML = '<div class="col-span-full py-12 text-center text-gray-400 text-sm border-2 border-dashed rounded-2xl">생성된 콘텐츠가 없습니다.</div>';
-            }
-        }
-    </script>
     <script type="module">
         import { loadComponent } from './ui.js';
-        import { checkLoginState } from './auth.js';
+        import { checkLoginState, startLogoutTimer } from './auth.js';
 
         window.addEventListener('DOMContentLoaded', () => {
-            // 헤더 로딩 후 이름 변경(checkLoginState)이 실행되도록 순서 보장
-            loadComponent('header-placeholder', 'header.html', () => {
-                checkLoginState(); 
-            });
+            loadComponent('header-placeholder', 'header.html', () => { checkLoginState(); startLogoutTimer(); });
             loadComponent('footer-placeholder', 'footer.html');
-        });
-    </script>
 
+            loadMyContents();
+            loadAdminNews();  
+            
+            // 💡 관리자 통계 데이터 불러와서 렌더링 시작
+            const stats = getDashboardStats();
+            loadPopularContents(stats.popularContents);
+            drawCharts(stats);
+        });
+
+        // 로컬스토리지에서 통계 데이터 가져오기 (없으면 기본값)
+        function getDashboardStats() {
+            const defaultStats = {
+                hotKeywords: [{name: '#임플란트', val: 85}, {name: '#치아교정', val: 62}, {name: '#투명교정', val: 45}, {name: '#라미네이트', val: 38}, {name: '#사랑니', val: 20}],
+                hotChannels: [{name: 'YouTube Shorts', val: 55}, {name: 'Instagram Reels', val: 30}, {name: 'Naver Clip', val: 15}],
+                popularContents: [
+                    {title: '"원장님 등판! 교정기 빼는 날 브이로그"', desc: '조회수 125만회 · 유튜브 쇼츠', link: 'https://youtube.com/shorts/v-p_kFkOYjY'},
+                    {title: '"치아미백 하기 전 무조건 보세요 (1분 요약)"', desc: '조회수 89만회 · 인스타그램 릴스', link: 'https://youtube.com/shorts/0eU4VwTqNRo'},
+                    {title: '"수면 임플란트, 진짜 하나도 안 아플까?"', desc: '조회수 56만회 · 유튜브 쇼츠', link: 'https://youtube.com/shorts/z63r5tgNAns'}
+                ]
+            };
+            return JSON.parse(localStorage.getItem('sys_dashboard_stats')) || defaultStats;
+        }
+
+        // 💡 관리자가 입력한 인기 콘텐츠 3개 렌더링
+        function loadPopularContents(contents) {
+            const container = document.getElementById('dashboard-popular-contents');
+            if(!container) return;
+
+            container.innerHTML = contents.map((c, i) => {
+                const colorClass = i === 0 ? 'text-orange-500' : 'text-gray-400';
+                return `
+                    <div onclick="window.open('${c.link}', '_blank')" class="flex items-center p-3 hover:bg-orange-50 rounded-xl transition cursor-pointer">
+                        <span class="text-xl font-black ${colorClass} w-8 text-center">${i+1}</span>
+                        <div class="ml-3 flex-grow">
+                            <h4 class="text-sm font-bold text-gray-800">${c.title}</h4>
+                            <p class="text-[10px] text-gray-500">${c.desc}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 💡 관리자가 입력한 데이터로 차트 그리기
+        function drawCharts(stats) {
+            // 1. 키워드 차트
+            const kwLabels = stats.hotKeywords.map(k => k.name);
+            const kwData = stats.hotKeywords.map(k => k.val);
+
+            const ctxKeyword = document.getElementById('keywordChart').getContext('2d');
+            new Chart(ctxKeyword, {
+                type: 'bar',
+                data: {
+                    labels: kwLabels,
+                    datasets: [{
+                        label: '검색 및 사용량 지수',
+                        data: kwData,
+                        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                        borderRadius: 6, borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 2. 채널 차트
+            const chLabels = stats.hotChannels.map(c => c.name);
+            const chData = stats.hotChannels.map(c => c.val);
+
+            const ctxChannel = document.getElementById('channelChart').getContext('2d');
+            new Chart(ctxChannel, {
+                type: 'doughnut',
+                data: {
+                    labels: chLabels,
+                    datasets: [{
+                        data: chData,
+                        backgroundColor: ['#ef4444', '#ec4899', '#22c55e'], // 유튜브, 인스타, 네이버 컬러유지
+                        borderWidth: 2, hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '65%',
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                }
+            });
+        }
+
+        // 내가 만든 콘텐츠 복원 (변경 없음)
+        function loadMyContents() {
+            const container = document.getElementById('dashboard-my-contents');
+            const myContents = JSON.parse(localStorage.getItem('myContents')) || [];
+            if (myContents.length === 0) {
+                container.innerHTML = `<div class="col-span-3 bg-white p-8 rounded-3xl border border-gray-100 text-center text-gray-500 text-sm font-bold">아직 생성된 콘텐츠가 없습니다. 위 버튼을 눌러 첫 콘텐츠를 만들어보세요!</div>`;
+                return;
+            }
+            const recentContents = myContents.slice(-3).reverse();
+            container.innerHTML = recentContents.map(content => {
+                const isVideo = content.type === 'video';
+                return `
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-orange-300 hover:shadow-md transition cursor-pointer flex flex-col justify-between" 
+                         onclick="localStorage.setItem('currentContentId', '${content.id}'); location.href='publish.html';">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-3xl">${isVideo ? '🎬' : '📝'}</span>
+                            <span class="text-[10px] font-bold text-gray-400 bg-gray-50 border border-gray-100 px-2 py-1 rounded-md">${content.date}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm mb-1 truncate">${content.keywords || '제목 없는 콘텐츠'}</h4>
+                            <p class="text-xs text-gray-500 font-bold">${isVideo ? '숏폼 영상' : 'SNS 게시글'}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 관리자 소식 복원 (변경 없음)
+        function loadAdminNews() {
+            const container = document.getElementById('dashboard-news-list');
+            const sysNews = JSON.parse(localStorage.getItem('sys_news')) || [];
+            if (!container) return;
+            if (sysNews.length === 0) { container.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">등록된 새로운 소식이 없습니다.</p>'; return; }
+            container.innerHTML = sysNews.slice(0, 4).map(news => {
+                const badgeColor = news.type === '공지' ? 'bg-red-100 text-red-600' : news.type === '이벤트' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600';
+                return `
+                    <div class="flex justify-between items-center py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition px-2 rounded-lg cursor-pointer">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="text-[10px] font-bold px-2 py-1 rounded-md shrink-0 ${badgeColor}">${news.type}</span>
+                            <span class="text-sm text-gray-700 font-bold truncate">${news.title}</span>
+                        </div>
+                        <span class="text-xs text-gray-400 font-mono shrink-0 ml-4">${news.date}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
 </body>
 </html>

@@ -1,31 +1,45 @@
-/* 날짜: 2026-03-05 
-코드이름: auth.js
-내용: 비동기 로딩 대응 및 전역 함수 연동 강화
-*/
-
 // 로그인 상태 확인 및 UI 업데이트
 export function checkLoginState() {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const userName = localStorage.getItem('managerName') || '원장';
+    const userName = localStorage.getItem('managerName') || '영석'; 
+    const userTier = localStorage.getItem('userTier') || 'Pro'; 
 
-    if (isLoggedIn) {
-        // 💡 0.1초 정도 아주 미세한 지연을 주어 헤더 로딩이 완료될 시간을 벌어줍니다.
-        setTimeout(() => {
-            const authArea = document.getElementById('auth-area');
-            const guestArea = document.getElementById('guest-area');
-            const nameDisplay = document.querySelector('.user-name-text');
+    setTimeout(() => {
+        const authArea = document.getElementById('auth-area');
+        const guestArea = document.getElementById('guest-area');
 
+        if (isLoggedIn) {
+            // 💡 로그인 상태: 드롭다운 보이기, 로그인 글자 숨기기
             if (authArea) authArea.classList.remove('hidden');
             if (guestArea) guestArea.classList.add('hidden');
-            if (nameDisplay) nameDisplay.innerText = userName;
-        }, 100); 
-    }
+
+            const nameDisplayNew = document.getElementById('userNameDisplay');
+            if (nameDisplayNew) nameDisplayNew.innerText = userName;
+            
+            const tierDisplay = document.getElementById('headerPlanName');
+            if (tierDisplay) tierDisplay.innerText = userTier;
+        } else {
+            // 💡 로그아웃 상태: 드롭다운 숨기기, 로그인 글자 보이기
+            if (authArea) authArea.classList.add('hidden');
+            if (guestArea) guestArea.classList.remove('hidden');
+        }
+    }, 100); 
 }
 
-// 로그아웃 처리 (전역 노출)
+// 💡 [핵심 추가] 신규 헤더(header.html)의 onclick="logout()" 버튼과 연결되는 함수
+window.logout = function() {
+    if (confirm("정말 로그아웃 하시겠습니까?")) {
+        window.handleLogout(); // 기존에 만들어두신 로그아웃 로직을 그대로 실행합니다.
+    }
+};
+
+// 로그아웃 처리 (전역 노출 - 기존 함수)
 window.handleLogout = function() {
+    if (logoutInterval) clearInterval(logoutInterval); // 돌아가던 90분 타이머 중지
     localStorage.removeItem('isLoggedIn');
-    location.href = 'index.html';
+    localStorage.removeItem('managerName');
+    localStorage.removeItem('userTier');
+    location.href = 'index.html'; // 로그아웃 후 메인(index)으로 이동
 };
 
 // 로그인 성공 시 공통 처리
@@ -42,8 +56,10 @@ window.handleAuthClick = function() {
     }
 };
 
-/* 날짜: 2026-03-06*/
 
+// ---------------------------------------------
+// 90분 자동 로그아웃 타이머 기능
+// ---------------------------------------------
 let logoutInterval;
 
 export function startLogoutTimer() {
@@ -65,8 +81,11 @@ export function startLogoutTimer() {
         if (timeRemaining <= 0) {
             clearInterval(logoutInterval);
             alert("보안을 위해 90분이 경과하여 자동 로그아웃 되었습니다.");
-            localStorage.removeItem('currentUser'); // 로그인 정보 삭제
-            window.location.href = 'login.html'; // 로그인 화면으로 튕겨냄
+            
+            // 정보 초기화
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('managerName');
+            window.location.href = 'login.html'; // 타이머 종료 시 로그인 창으로 강제 이동
         }
     }, 1000);
 }

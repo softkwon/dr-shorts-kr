@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -36,7 +35,7 @@
                             <li>✅ 월 1회 콘텐츠 생성</li>
                             <li>✅ 의료법 기본 스캐닝</li>
                         </ul>
-                        <button class="mt-auto w-full py-2 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm">현재 등급</button>
+                        <button class="mt-auto w-full py-2 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm cursor-default">현재 등급</button>
                     </div>
 
                     <div class="bg-white rounded-3xl shadow-lg border-2 border-orange-400 p-6 flex flex-col items-center relative transform md:-translate-y-2">
@@ -47,7 +46,7 @@
                             <li>✅ 월 10회 콘텐츠 생성</li>
                             <li>✅ 성과 분석 대시보드</li>
                         </ul>
-                        <button onclick="openUpgradeModal('Pro')" class="mt-auto w-full py-2 rounded-xl bg-orange-500 text-white font-bold text-sm hover:bg-orange-600">등급 업그레이드</button>
+                        <button onclick="openUpgradeModal('Pro')" class="mt-auto w-full py-2 rounded-xl bg-orange-500 text-white font-bold text-sm hover:bg-orange-600 transition">등급 업그레이드</button>
                     </div>
 
                     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex flex-col items-center">
@@ -57,7 +56,7 @@
                             <li>✅ 무제한 콘텐츠 생성</li>
                             <li>✅ 1:1 광고 심의 컨설팅</li>
                         </ul>
-                        <button onclick="openUpgradeModal('Premium')" class="mt-auto w-full py-2 rounded-xl bg-gray-800 text-white font-bold text-sm hover:bg-gray-700">등급 업그레이드</button>
+                        <button onclick="openUpgradeModal('Premium')" class="mt-auto w-full py-2 rounded-xl bg-gray-800 text-white font-bold text-sm hover:bg-gray-700 transition">등급 업그레이드</button>
                     </div>
                 </div>
             </section>
@@ -94,7 +93,8 @@
                                 <td class="py-4 px-4"><span class="text-green-500 font-bold text-xs bg-green-50 px-2 py-1 rounded">결제완료</span></td>
                                 <td class="py-4 px-4 text-center space-x-1">
                                     <button onclick="alert('영수증 PDF가 다운로드됩니다.')" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-[11px] font-bold px-3 py-1.5 rounded-lg transition">영수증 출력</button>
-                                    <button onclick="cancelSubscription('2026-03-01')" class="bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-lg transition">구독 취소</button>
+                                    
+                                    <button onclick="cancelSubscription('2026-03-01', this)" class="bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-lg transition">구독 취소</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -107,18 +107,37 @@
     <div id="footer-placeholder"></div>
 
     <div id="upgradeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transition-all">
             <h3 id="upgradeModalTitle" class="text-xl font-black text-gray-800 mb-2">플랜 업그레이드</h3>
-            <p class="text-sm text-gray-500 mb-8">원하시는 진행 방식을 선택해 주세요.</p>
-            <div class="space-y-3">
-                <button onclick="openEstimateModal()" class="w-full bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition flex justify-center items-center">
+            <p class="text-sm text-gray-500 mb-6">원하시는 진행 방식을 선택해 주세요.</p>
+            
+            <div class="space-y-3" id="upgradeModalButtons">
+                <button onclick="openEstimateModal()" class="w-full bg-white border-2 border-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition flex justify-center items-center">
                     <span class="mr-2 text-xl">📑</span> 견적서 발행
                 </button>
-                <button onclick="openCheckout()" class="w-full bg-gray-800 text-white font-bold py-4 rounded-xl hover:bg-gray-700 transition flex justify-center items-center">
-                    <span class="mr-2 text-xl">💳</span> 바로 결제하기
+                <button onclick="toggleSavedCards()" class="w-full bg-orange-50 border border-orange-200 text-orange-600 font-bold py-3 rounded-xl hover:bg-orange-100 transition flex justify-center items-center">
+                    <span class="mr-2 text-xl">📂</span> 등록된 내 카드 불러오기
+                </button>
+                <button onclick="openCheckout()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-700 transition flex justify-center items-center">
+                    <span class="mr-2 text-xl">💳</span> 새로운 카드로 결제
                 </button>
             </div>
-            <button onclick="closeModals()" class="w-full mt-4 text-sm text-gray-400 font-bold hover:text-gray-600">취소</button>
+
+            <div id="savedCardsList" class="hidden mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs font-bold text-gray-500 mb-2">등록된 카드 목록 (원클릭 결제)</p>
+                <div class="space-y-2">
+                    <button onclick="payWithSavedCard('KB국민카드 (끝자리 1234)')" class="w-full flex justify-between items-center bg-gray-50 border border-gray-200 p-3 rounded-xl hover:bg-gray-100 transition text-sm">
+                        <span class="font-bold text-gray-700">💳 KB국민카드</span>
+                        <span class="text-xs text-gray-400">**** 1234</span>
+                    </button>
+                    <button onclick="payWithSavedCard('신한카드 (끝자리 5678)')" class="w-full flex justify-between items-center bg-gray-50 border border-gray-200 p-3 rounded-xl hover:bg-gray-100 transition text-sm">
+                        <span class="font-bold text-gray-700">💳 신한카드</span>
+                        <span class="text-xs text-gray-400">**** 5678</span>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="closeModals()" class="w-full mt-6 text-sm text-gray-400 font-bold hover:text-gray-600">취소</button>
         </div>
     </div>
 
@@ -192,6 +211,52 @@
             upgradeModal.classList.add('flex');
         }
 
+        // 💡 1. [핵심] 구독 취소 버튼 상태 변경 로직 (btnElement 매개변수 사용)
+        function cancelSubscription(paymentDateStr, btnElement) {
+            const paymentDate = new Date(paymentDateStr);
+            const nextBillingDate = new Date(paymentDate);
+            nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+            
+            const expireDate = new Date(nextBillingDate);
+            expireDate.setDate(expireDate.getDate() - 1);
+            
+            const expireMonth = expireDate.getMonth() + 1;
+            const expireDay = expireDate.getDate();
+            
+            const confirmMessage = `정말 구독을 취소하시겠습니까?\n취소하시더라도 ${expireMonth}월 ${expireDay}일까지 현재 등급이 제공하는 서비스를 이용할 수 있습니다.`;
+            
+            if (confirm(confirmMessage)) {
+                alert('구독이 정상적으로 해지 예약되었습니다.');
+                
+                // 버튼을 '취소 완료' 상태로 스타일 변경 및 비활성화
+                if(btnElement) {
+                    btnElement.innerText = "취소 완료";
+                    // 붉은색에서 회색으로 디자인 변경
+                    btnElement.className = "bg-gray-100 border border-gray-200 text-gray-400 text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-not-allowed";
+                    btnElement.onclick = null; // 더 이상 클릭되지 않도록 방지
+                }
+            }
+        }
+
+        // 💡 2. [핵심] 내 카드 목록 토글 함수
+        function toggleSavedCards() {
+            const cardList = document.getElementById('savedCardsList');
+            if (cardList.classList.contains('hidden')) {
+                cardList.classList.remove('hidden');
+            } else {
+                cardList.classList.add('hidden');
+            }
+        }
+
+        // 💡 3. [핵심] 등록된 카드로 바로 결제 처리 함수
+        function payWithSavedCard(cardName) {
+            if(confirm(`선택하신 [${cardName}]로 ${selectedPlanName} 요금제(${selectedPlanPrice.toLocaleString()}원)를 결제하시겠습니까?`)) {
+                alert('결제가 성공적으로 승인되었습니다! 멤버십이 업그레이드 됩니다.');
+                closeModals();
+                location.reload(); // 성공 시 페이지 새로고침
+            }
+        }
+
         function openEstimateModal() {
             document.getElementById('estimatePlanName').innerText = `${selectedPlanName} 요금제 (월간)`;
             const supplyPrice = Math.round(selectedPlanPrice / 1.1);
@@ -229,37 +294,15 @@
             upgradeModal.classList.remove('flex');
             estimateModal.classList.add('hidden');
             estimateModal.classList.remove('flex');
+            
+            // 모달 닫을 때 카드 목록도 다시 숨김
+            const cardList = document.getElementById('savedCardsList');
+            if(cardList) cardList.classList.add('hidden');
         }
 
         function downloadEstimate() {
             alert('견적서 PDF 파일 다운로드를 시작합니다.');
             closeModals();
-        }
-
-        // 💡 [핵심] 구독 취소 날짜 자동 계산 함수
-        function cancelSubscription(paymentDateStr) {
-            // 1. 결제일 문자열을 날짜 객체로 변환 (예: 2026-03-01)
-            const paymentDate = new Date(paymentDateStr);
-            
-            // 2. 다음 달 결제일 계산 (한 달 더하기)
-            const nextBillingDate = new Date(paymentDate);
-            nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
-            
-            // 3. 만료일 계산 (다음 결제일 하루 전)
-            const expireDate = new Date(nextBillingDate);
-            expireDate.setDate(expireDate.getDate() - 1);
-            
-            // 4. M월 D일 형태로 포맷팅
-            const expireMonth = expireDate.getMonth() + 1;
-            const expireDay = expireDate.getDate();
-            
-            // 5. 알림창 띄우기
-            const confirmMessage = `정말 구독을 취소하시겠습니까?\n취소하시더라도 ${expireMonth}월 ${expireDay}일까지 현재 등급이 제공하는 서비스를 이용할 수 있습니다.`;
-            
-            if (confirm(confirmMessage)) {
-                alert('구독이 정상적으로 해지 예약되었습니다.');
-                // 추후 이곳에 실제 해지 API 호출 로직을 넣으면 됩니다.
-            }
         }
     </script>
 

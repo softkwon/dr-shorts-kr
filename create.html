@@ -63,6 +63,7 @@
                             </div>
                         <input type="text" id="custom-keyword" placeholder="기타 키워드를 직접 입력해 주세요" class="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm">
                     </section>
+
                     <section>
                         <label class="block text-sm font-bold text-gray-700 mb-3">5) AI추천 - 예약성공 템플릿</label>
                         <div class="grid grid-cols-1 gap-3">
@@ -136,7 +137,6 @@
             const type = params.get('type') || 'video';
             initCreatePage(type);
 
-            // 폼 전송 이벤트 연결
             const form = document.getElementById('creation-form');
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -152,24 +152,22 @@
             if (type === 'video') {
                 title.innerText = "🎬 숏폼 영상 생성 설정";
                 videoSection.style.display = 'block';
-                // 💡 3가지 유형 복원: 나레이션, 인터뷰, 브이로그
                 typeGrid.innerHTML = 
                     createTypeCard('v1', '🎙️', '나레이션형', '신뢰감 있는 정보전달', true) + 
                     createTypeCard('v2', '👥', '인터뷰형', '생생한 환자/원장 후기') +
                     createTypeCard('v3', '🏥', '브이로그형', '병원의 친근한 일상');
                 
-                // 💡 키워드 확장 (치과 전문성 강화)
+                // 기본 비디오 키워드 
                 setKeywords(['#임플란트', '#치아교정', '#틀니교정', '#무통치료', '#심미보철', '#원데이보철', '#사랑니발치', '#스케일링', '#치아미백', '#어린이치과']);
             } else {
                 title.innerText = "📝 SNS 게시글 생성 설정";
                 videoSection.style.display = 'none';
-                // 💡 3가지 유형 복원: 카드뉴스, 스토리텔링, 비포애프터
                 typeGrid.innerHTML = 
                     createTypeCard('s1', '📰', '카드뉴스형', '인스타/블로그 요약', true) +
                     createTypeCard('s2', '📖', '스토리텔링형', '감동적인 치료 사례') +
                     createTypeCard('s3', '✨', '비포애프터형', '시술 효과 극대화');
                 
-                // 💡 키워드 확장 (마케팅 키워드 강화)
+                // 기본 SNS 키워드
                 setKeywords(['#병원소식', '#이달의이벤트', '#건강상식', '#진료안내', '#환자후기', '#의료진소개', '#첨단장비', '#야간진료', '#주차안내', '#위치안내']);
             }
         }
@@ -184,13 +182,18 @@
             </label>`;
         }
 
-        function setKeywords(list) {
+        // 💡 [핵심 수정 부분] 관리자 모드에서 저장한 데이터를 불러와 기존 키워드들과 합칩니다.
+        function setKeywords(defaultList) {
             const container = document.getElementById('keyword-container');
-            const extendedList = (list.length > 3 && list[0].includes('임플란트')) 
-                ? ['#임플란트', '#치아교정', '#틀니교정', '#무통치료', '#심미보철', '#원데이보철', '#사랑니발치', '#스케일링', '#치아미백', '#어린이치과']
-                : ['#병원소식', '#이달의이벤트', '#건강상식', '#진료안내', '#환자후기', '#의료진소개', '#첨단장비', '#야간진료', '#주차안내', '#위치안내'];
+            
+            // 1. 관리자가 입력한 sys_keywords 불러오기 (없으면 빈 배열)
+            const sysKeywords = JSON.parse(localStorage.getItem('sys_keywords')) || [];
+            
+            // 2. 관리자 키워드를 맨 앞에 배치하고, 기존 추천 키워드와 합친 뒤 중복을 제거합니다.
+            const combinedList = [...new Set([...sysKeywords, ...defaultList])];
 
-            container.innerHTML = extendedList.map(kw => `
+            // 3. 기존의 클릭(토글) 기능이 그대로 유지되도록 버튼을 그려줍니다.
+            container.innerHTML = combinedList.map(kw => `
                 <button type="button" onclick="this.classList.toggle('bg-orange-50'); this.classList.toggle('text-orange-600'); this.classList.toggle('border-orange-200');" class="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-medium border border-transparent transition hover:bg-gray-200">
                     ${kw}
                 </button>
@@ -198,19 +201,18 @@
         }
 
         async function handleCreateSubmit() {
+            // 주황색으로 선택된(bg-orange-50) 버튼들의 텍스트만 쏙쏙 뽑아냅니다.
             const selectedBadges = Array.from(document.querySelectorAll('#keyword-container .bg-orange-50'))
                                         .map(btn => btn.innerText.trim());
             const customInput = document.getElementById('custom-keyword').value.trim();
             
-            // 💡 AI 적절성 판단 로직 추가
             if (customInput) {
-                // 의료법 위반 가능성이 높은 금지어 리스트 (AI 판단 기준 예시)
                 const forbiddenWords = ['최고', '제일', '가장', '완치', '전문의', '부작용 없음', '최저가'];
                 const foundWord = forbiddenWords.find(word => customInput.includes(word));
 
                 if (foundWord) {
                     alert(`⚠️ 입력하신 키워드에 부적절한 표현('${foundWord}')이 포함되어 있습니다.\n의료 광고법 위반 소지가 있으므로 수정이 권장됩니다.`);
-                    return; // 중단하여 수정을 유도
+                    return; 
                 }
             }
 
@@ -223,7 +225,6 @@
 
             const type = new URLSearchParams(window.location.search).get('type') || 'video';
             
-            // 데이터 저장 후 이동
             saveTempContent(type, finalKeywords);
             location.href = 'scan.html';
         }

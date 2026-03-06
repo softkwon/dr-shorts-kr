@@ -1,17 +1,17 @@
 <header class="bg-white border-b sticky top-0 z-40 shadow-sm">
     <div class="responsive-container h-16 flex justify-between items-center">
         <h1 class="text-xl md:text-2xl font-extrabold tracking-wider cursor-pointer hover:opacity-80 transition" onclick="location.href='index.html'">
-            <span class="theme-text">Dr. SHORTS</span><span class="text-gray-800">.KR</span>
+            <span class="theme-text">Dr. SHORTS</span>
         </h1>
         
-        <div class="flex items-center">
-            <div id="guest-area">
-                <button onclick="location.href='login.html'" class="text-sm md:text-base theme-text font-bold hover:text-orange-700 transition">
+        <div class="flex items-center h-full">
+            <div id="guest-area" class="h-full flex items-center">
+                <button onclick="location.href='login.html'" class="text-sm md:text-base theme-text font-bold hover:text-orange-700 transition mr-4">
                     로그인 / 회원가입
                 </button>
             </div>
 
-            <div class="relative group cursor-pointer flex items-center h-full py-2">
+            <div id="auth-area" class="hidden relative group cursor-pointer flex items-center h-full py-2">
     
                 <a href="billing.html" class="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-[11px] font-black px-2 py-1 rounded shadow-sm mr-2 hover:opacity-80 transition">
                     <span id="headerPlanName">Pro</span>
