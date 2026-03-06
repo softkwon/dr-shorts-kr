@@ -20,15 +20,16 @@
             <h2 class="text-2xl font-bold text-center mb-8 text-gray-800">로그인 / 회원가입</h2>
 
             <div class="space-y-3 mb-8">
-                <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center border border-gray-300 py-3 rounded-xl hover:bg-gray-50 transition font-medium text-gray-700">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="w-5 h-5 mr-3"> 구글로 시작하기
+                <button onclick="mockSocialLogin('구글')" class="w-full flex items-center justify-center border border-gray-300 py-3 rounded-xl hover:bg-gray-50 transition font-bold text-gray-700 shadow-sm">
+                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" class="w-5 h-5 mr-3"> 
+                    Google로 시작하기
                 </button>
-                <button onclick="loginWithKakao()" class="w-full flex items-center justify-center bg-[#FEE500] text-[#000000] py-3 rounded-xl hover:bg-[#F4DC00] transition font-medium">
+                <button onclick="mockSocialLogin('카카오')" class="w-full flex items-center justify-center bg-[#FEE500] text-[#000000] py-3 rounded-xl hover:bg-[#F4DC00] transition font-medium">
                     <svg class="w-5 h-5 mr-3" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16 4.64c-6.96 0-12.64 4.48-12.64 10.08 0 3.52 2.32 6.64 5.76 8.48l-1.44 5.44c-.16.48.32.8.72.56l6.32-4.24c.4.08.8.08 1.28.08 6.96 0 12.64-4.48 12.64-10.08S22.96 4.64 16 4.64z" fill="#000000"/>
                     </svg> 카카오로 시작하기
                 </button>
-                <button onclick="loginWithNaver()" class="w-full flex items-center justify-center bg-[#03C75A] text-white py-3 rounded-xl hover:bg-[#02b350] transition font-medium" id="naverIdLogin_loginButton">
+                <button onclick="mockSocialLogin('네이버')" class="w-full flex items-center justify-center bg-[#03C75A] text-white py-3 rounded-xl hover:bg-[#02b350] transition font-medium" id="naverIdLogin_loginButton">
                     <svg class="w-5 h-5 mr-3" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                         <path d="M21.16 22.8H15.6l-5.4-8.12v8.12H5V9.2h5.56l5.4 8.16V9.2h5.2v13.6z" fill="#FFFFFF"/>
                     </svg> 네이버로 시작하기
@@ -62,68 +63,74 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="app.js"></script>
+    <script type="module">
+        import { loadComponent } from './ui.js';
+        
+        // 헤더와 푸터 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html');
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+
     <script>
-        // 공통 로그인 성공 처리 함수
+        // 💡 [핵심 연동] MVP용 가짜(Mock) 로그인 성공 처리 함수
         function processLoginSuccess() {
+            // 헤더 UI 연동을 위한 전역 상태 저장
             localStorage.setItem('isLoggedIn', 'true');
+            if (!localStorage.getItem('managerName')) localStorage.setItem('managerName', '영석'); 
+            if (!localStorage.getItem('userTier')) localStorage.setItem('userTier', 'Pro'); 
+            
+            // 대시보드로 이동
             location.href = 'dashboard.html';
         }
 
         // 이메일 로그인 폼 제출 처리
         function handleEmailLogin(event) {
             event.preventDefault();
+            alert('이메일 로그인이 성공했습니다!');
             processLoginSuccess();
         }
 
-        // ==========================================
-        // 소셜 로그인 연동 스크립트 설정부
-        // ==========================================
+        // 💡 [추가] MVP용 소셜 로그인 처리 로직
+        function mockSocialLogin(provider) {
+            alert(`${provider} 계정으로 안전하게 로그인되었습니다!`);
+            processLoginSuccess();
+        }
 
+        /* ===================================================================
+        🚨 아래는 향후 실제 API 연동 시 사용할 원본 코드입니다. (현재는 실행되지 않음)
+        ===================================================================
+        
         // [구글 로그인 설정]
         let googleClient;
         window.addEventListener('load', () => {
             googleClient = google.accounts.oauth2.initTokenClient({
-                client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // 🔑 구글 클라이언트 ID 입력 필요
+                client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', 
                 scope: 'email profile',
-                callback: (tokenResponse) => {
-                    console.log("구글 로그인 성공!");
-                    processLoginSuccess(); // 성공 시 대시보드 이동
-                },
+                callback: (tokenResponse) => { processLoginSuccess(); },
             });
         });
-
-        function loginWithGoogle() {
-            googleClient.requestAccessToken();
-        }
+        function loginWithGoogle() { googleClient.requestAccessToken(); }
 
         // [카카오 로그인 설정]
-        Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY'); // 🔑 카카오 디벨로퍼스 JS 키 입력 필요
-
+        // Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY'); 
         function loginWithKakao() {
             Kakao.Auth.login({
-                success: function(authObj) {
-                    console.log("카카오 로그인 성공!");
-                    processLoginSuccess(); // 성공 시 대시보드 이동
-                },
-                fail: function(err) {
-                    console.error("카카오 로그인 실패:", err);
-                    alert("카카오 로그인 키를 설정해주세요.");
-                }
+                success: function(authObj) { processLoginSuccess(); },
+                fail: function(err) { alert("카카오 로그인 키를 설정해주세요."); }
             });
         }
 
         // [네이버 로그인 설정]
-        const naverLogin = new naver_id_login("YOUR_NAVER_CLIENT_ID", "http://127.0.0.1:5500/dashboard.html"); // 🔑 네이버 Client ID 입력
-        const state = naverLogin.getUniqState();
-        naverLogin.setButton("white", 2, 40);
-        naverLogin.setDomain("http://127.0.0.1:5500");
-        naverLogin.setState(state);
-        naverLogin.init_naver_id_login();
-
-        function loginWithNaver() {
-            document.querySelector('#naverIdLogin a').click();
-        }
+        // const naverLogin = new naver_id_login("YOUR_NAVER_CLIENT_ID", "http://127.0.0.1:5500/dashboard.html");
+        // const state = naverLogin.getUniqState();
+        // naverLogin.setButton("white", 2, 40);
+        // naverLogin.setDomain("http://127.0.0.1:5500");
+        // naverLogin.setState(state);
+        // naverLogin.init_naver_id_login();
+        function loginWithNaver() { document.querySelector('#naverIdLogin a').click(); }
+        */
     </script>
 </body>
 </html>
